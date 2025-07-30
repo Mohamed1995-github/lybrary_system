@@ -1,0 +1,76 @@
+# Configuration de sécurité pour le système de bibliothèque
+
+# Protection contre l'énumération de répertoires
+Options -Indexes
+
+# Headers de sécurité
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+</IfModule>
+
+# Protection contre les attaques par injection
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Bloquer les tentatives d'accès aux dossiers sensibles
+    RewriteRule ^(config|includes|lang|logs)/ - [F,L]
+    
+    # Bloquer les tentatives d'accès aux fichiers de sauvegarde
+    RewriteRule \.(bak|backup|old|tmp|temp)$ - [F,L]
+    
+    # Bloquer les tentatives d'accès aux fichiers de base de données
+    RewriteRule \.(sql|db|sqlite)$ - [F,L]
+    
+    # Bloquer l'accès aux fichiers de configuration sensibles
+    RewriteRule \.(env|config|log|md|txt)$ - [F,L]
+    
+    # Rediriger les accès aux modules vers le routeur sécurisé
+    RewriteRule ^modules/([^/]+)/([^/]+)\.php$ public/router.php?module=$1&action=$2 [L,QSA]
+    
+    # Rediriger les erreurs vers la page d'erreur personnalisée
+    ErrorDocument 403 /library_system/public/error.php?code=403
+    ErrorDocument 404 /library_system/public/error.php?code=404
+</IfModule>
+
+# Bloquer l'accès aux fichiers sensibles spécifiques
+<FilesMatch "\.(env|config|sql|log|md|txt)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Autoriser l'accès au fichier index.php principal (redirection)
+<Files "index.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Autoriser l'accès aux fichiers dans public/
+<Files "public/*.php">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+<Files "public/*.html">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+<Files "public/*.css">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+<Files "public/*.js">
+    Order Allow,Deny
+    Allow from all
+</Files>
+
+# Autoriser l'accès aux fichiers dans uploads/
+<Files "uploads/*">
+    Order Allow,Deny
+    Allow from all
+</Files> 

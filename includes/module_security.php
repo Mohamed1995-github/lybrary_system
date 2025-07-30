@@ -15,65 +15,6 @@ class ModuleSecurity {
         $this->user_role = $user_role;
     }
     
-    /**
-     * Vérifier si l'utilisateur a les permissions pour accéder au module
-     */
-    public function checkModuleAccess($module, $action) {
-        $allowed_modules = [
-            'acquisitions' => [
-                'add' => ['admin', 'librarian'],
-                'edit' => ['admin', 'librarian'],
-                'delete' => ['admin'],
-                'list' => ['admin', 'librarian', 'assistant']
-            ],
-            'items' => [
-                'add_book' => ['admin', 'librarian'],
-                'add_magazine' => ['admin', 'librarian'],
-                'add_newspaper' => ['admin', 'librarian'],
-                'edit' => ['admin', 'librarian'],
-                'delete' => ['admin'],
-                'list' => ['admin', 'librarian', 'assistant'],
-                'list_grouped' => ['admin', 'librarian', 'assistant']
-            ],
-            'loans' => [
-                'add' => ['admin', 'librarian'],
-                'borrow' => ['admin', 'librarian'],
-                'return' => ['admin', 'librarian'],
-                'list' => ['admin', 'librarian', 'assistant']
-            ],
-            'borrowers' => [
-                'add' => ['admin', 'librarian'],
-                'edit' => ['admin', 'librarian'],
-                'list' => ['admin', 'librarian', 'assistant']
-            ],
-            'administration' => [
-                'add' => ['admin'],
-                'edit' => ['admin'],
-                'delete' => ['admin'],
-                'list' => ['admin'],
-                'permissions_guide' => ['admin']
-            ],
-            'members' => [
-                'add' => ['admin', 'librarian'],
-                'edit' => ['admin', 'librarian'],
-                'list' => ['admin', 'librarian', 'assistant']
-            ]
-        ];
-        
-        // Vérifier si le module existe
-        if (!isset($allowed_modules[$module])) {
-            return false;
-        }
-        
-        // Vérifier si l'action existe pour ce module
-        if (!isset($allowed_modules[$module][$action])) {
-            return false;
-        }
-        
-        // Vérifier les permissions
-        $required_roles = $allowed_modules[$module][$action];
-        return in_array($this->user_role, $required_roles);
-    }
     
     /**
      * Générer un token CSRF

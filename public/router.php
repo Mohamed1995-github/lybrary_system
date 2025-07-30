@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/permissions.php';
 
 // Vérifier l'authentification
 if (!isset($_SESSION['uid'])) {
@@ -12,38 +13,77 @@ if (!isset($_SESSION['uid'])) {
     exit;
 }
 
-// Obtenir le module et l'action depuis l'URL
+// Obtenir les paramètres de la requête
 $module = $_GET['module'] ?? '';
 $action = $_GET['action'] ?? 'list';
 $lang = $_GET['lang'] ?? 'ar';
 
-// Définir les modules autorisés
-$allowed_modules = [
-    'acquisitions' => ['add', 'edit', 'delete', 'list'],
-    'items' => ['add_book', 'add_magazine', 'add_newspaper', 'add_edit', 'edit', 'delete', 'list', 'list_grouped'],
-    'loans' => ['add', 'borrow', 'return', 'list'],
-    'borrowers' => ['add', 'edit', 'list'],
-    'administration' => ['add', 'edit', 'delete', 'list', 'permissions_guide'],
-    'members' => ['add', 'edit', 'list']
+// Définir les permissions requises pour chaque module et action
+$required_permissions = [
+    'acquisitions' => [
+        'list' => ['Gestion des approvisionnements', 'إدارة التزويد'],
+        'add' => ['Gestion des approvisionnements', 'إدارة التزويد'],
+        'edit' => ['Gestion des approvisionnements', 'إدارة التزويد'],
+        'delete' => ['Gestion des approvisionnements', 'إدارة التزويد', 'admin'],
+    ],
+    'items' => [
+        'list' => ['Gestion des livres', 'Gestion des magazines', 'Gestion des journaux', 'إدارة الكتب', 'إدارة المجلات', 'إدارة الصحف'],
+        'add_book' => ['Gestion des livres', 'إدارة الكتب'],
+        'add_magazine' => ['Gestion des magazines', 'إدارة المجلات'],
+        'add_newspaper' => ['Gestion des journaux', 'إدارة الصحف'],
+        'add_edit' => ['Gestion des livres', 'إدارة الكتب'],
+        'edit' => ['Gestion des livres', 'إدارة الكتب'],
+        'delete' => ['Gestion des livres', 'إدارة الكتب', 'admin'],
+        'list_grouped' => ['Gestion des livres', 'إدارة الكتب'],
+    ],
+    'loans' => [
+        'list' => ['Gestion des prêts', 'إدارة الإعارة'],
+        'add' => ['Gestion des prêts', 'إدارة الإعارة'],
+        'borrow' => ['Gestion des prêts', 'إدارة الإعارة'],
+        'return' => ['Gestion des prêts', 'إدارة الإعارة'],
+    ],
+    'borrowers' => [
+        'list' => ['Gestion des emprunteurs', 'إدارة المستعيرين'],
+        'add' => ['Gestion des emprunteurs', 'إدارة المستعيرين'],
+        'edit' => ['Gestion des emprunteurs', 'إدارة المستعيرين'],
+    ],
+    'administration' => [
+        'list' => ['Gestion des employés', 'إدارة الموظفين', 'admin'],
+        'add' => ['Gestion des employés', 'إدارة الموظفين', 'admin'],
+        'edit' => ['Gestion des employés', 'إدارة الموظفين', 'admin'],
+        'delete' => ['Gestion des employés', 'إدارة الموظفين', 'admin'],
+        'permissions_guide' => ['Gestion des employés', 'إدارة الموظفين', 'admin'],
+    ],
+    'members' => [
+        'list' => [], // Accès public
+        'add' => ['admin'],
+        'edit' => ['admin'],
+    ]
 ];
 
-// Vérifier si le module existe
-if (!isset($allowed_modules[$module])) {
+// Vérification de l'existence du module et de l'action
+if (!isset($required_permissions[$module]) || !array_key_exists($action, $required_permissions[$module])) {
     http_response_code(404);
-    echo '<h1>Module non trouvé</h1>';
-    echo '<p>Module demandé: ' . htmlspecialchars($module) . '</p>';
-    echo '<p>Modules disponibles: ' . implode(', ', array_keys($allowed_modules)) . '</p>';
-    echo '<p><a href="dashboard.php">Retour au tableau de bord</a></p>';
+    echo '<h1>Module ou action non trouvé</h1>';
     exit;
 }
 
-// Vérifier si l'action est autorisée pour ce module
-if (!in_array($action, $allowed_modules[$module])) {
-    http_response_code(403);
-    echo '<h1>Action non autorisée</h1>';
-    echo '<p>Action demandée: ' . htmlspecialchars($action) . '</p>';
-    echo '<p>Actions disponibles: ' . implode(', ', $allowed_modules[$module]) . '</p>';
-    echo '<p><a href="dashboard.php">Retour au tableau de bord</a></p>';
+// Vérification des permissions
+$permissions_for_action = $required_permissions[$module][$action];
+if (empty($permissions_for_action)) {
+    // Si aucune permission n'est requise, l'accès est public pour les utilisateurs connectés
+    $has_permission = true;
+} else {
+    $has_permission = hasAnyPermission($permissions_for_action);
+}
+
+if (!$has_permission) {
+    // Log de la tentative d'accès non autorisé
+    $log_entry = date('Y-m-d H:i:s') . " - User: {$_SESSION['uid']} - UNAUTHORIZED_ACCESS - Module: {$module} - Action: {$action} - IP: {$_SERVER['REMOTE_ADDR']}\n";
+    file_put_contents(__DIR__ . '/../logs/security.log', $log_entry, FILE_APPEND | LOCK_EX);
+
+    // Redirection vers la page d'erreur
+    header("Location: error.php?code=403&lang={$lang}");
     exit;
 }
 
@@ -54,13 +94,11 @@ $file_path = __DIR__ . "/../modules/{$module}/{$action}.php";
 if (!file_exists($file_path)) {
     http_response_code(404);
     echo '<h1>Page non trouvée</h1>';
-    echo '<p>Fichier demandé: ' . htmlspecialchars($file_path) . '</p>';
-    echo '<p><a href="dashboard.php">Retour au tableau de bord</a></p>';
     exit;
 }
 
-// Log de l'accès pour la sécurité
-$log_entry = date('Y-m-d H:i:s') . " - User: {$_SESSION['uid']} - FULL_ACCESS - Module: {$module} - Action: {$action} - IP: {$_SERVER['REMOTE_ADDR']}\n";
+// Log de l'accès autorisé
+$log_entry = date('Y-m-d H:i:s') . " - User: {$_SESSION['uid']} - AUTHORIZED_ACCESS - Module: {$module} - Action: {$action} - IP: {$_SERVER['REMOTE_ADDR']}\n";
 file_put_contents(__DIR__ . '/../logs/access.log', $log_entry, FILE_APPEND | LOCK_EX);
 
 // Inclure le fichier du module

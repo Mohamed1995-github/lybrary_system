@@ -358,13 +358,13 @@ $lang = $_SESSION['lang'] ?? 'ar';
             <i class="fas fa-users-cog"></i>
             <?= $lang == 'ar' ? 'الإدارة' : 'Administration' ?>
         </button>
-        <button class="section-tab" data-section="arabic">
+        <button class="section-tab" data-section="arabic-resources">
             <i class="fas fa-book"></i>
-            <?= $lang == 'ar' ? 'القسم العربي' : 'Section Arabe' ?>
+            <?= $lang == 'ar' ? 'المصادر العربية' : 'Ressources Arabes' ?>
         </button>
-        <button class="section-tab" data-section="french">
+        <button class="section-tab" data-section="french-resources">
             <i class="fas fa-book"></i>
-            <?= $lang == 'ar' ? 'القسم الفرنسي' : 'Section Française' ?>
+            <?= $lang == 'ar' ? 'المصادر الفرنسية' : 'Ressources Françaises' ?>
         </button>
         <button class="section-tab" data-section="loans">
             <i class="fas fa-handshake"></i>
@@ -512,149 +512,181 @@ $lang = $_SESSION['lang'] ?? 'ar';
         </div>
     </div>
 
-    <!-- Arabic Section -->
-    <div id="arabic" class="section-content">
+    <!-- Arabic Resources Section -->
+    <div id="arabic-resources" class="section-content">
         <div class="content-grid">
+            <!-- Source spécialisée arabe -->
             <div class="content-card fade-in">
                 <div class="content-header">
                     <div class="content-icon">
-                        <i class="fas fa-book"></i>
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'الكتب المتخصصةة' : 'Livres Arabes' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - الاقتصاد' : 'Sources Spécialisées - Économie' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
-                        <a href="router.php?module=items&action=list&lang=ar&type=book">
+                        <a href="router.php?module=items&action=list&lang=ar&type=book&specialty=economy">
+                            <i class="fas fa-chart-line"></i>
+                            <?= $lang == 'ar' ? 'كتب الاقتصاد' : 'Livres d\'économie' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=magazine&specialty=economy">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات الاقتصاد' : 'Revues d\'économie' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=ar&specialty=economy">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر اقتصادي' : 'Ajouter une ressource économique' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - القانون' : 'Sources Spécialisées - Droit' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=book&specialty=law">
+                            <i class="fas fa-gavel"></i>
+                            <?= $lang == 'ar' ? 'كتب القانون' : 'Livres de droit' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=magazine&specialty=law">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات القانون' : 'Revues juridiques' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=ar&specialty=law">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر قانوني' : 'Ajouter une ressource juridique' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - الإدارة العامة' : 'Sources Spécialisées - Administration Publique' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=book&specialty=public_admin">
+                            <i class="fas fa-university"></i>
+                            <?= $lang == 'ar' ? 'كتب الإدارة العامة' : 'Livres d\'administration publique' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=magazine&specialty=public_admin">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات الإدارة العامة' : 'Revues d\'administration publique' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=ar&specialty=public_admin">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر إداري' : 'Ajouter une ressource administrative' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - الدبلوماسية' : 'Sources Spécialisées - Diplomatie' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=book&specialty=diplomacy">
+                            <i class="fas fa-handshake"></i>
+                            <?= $lang == 'ar' ? 'كتب الدبلوماسية' : 'Livres de diplomatie' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=magazine&specialty=diplomacy">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات الدبلوماسية' : 'Revues diplomatiques' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=ar&specialty=diplomacy">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر دبلوماسي' : 'Ajouter une ressource diplomatique' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Source générale arabe -->
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر العامة' : 'Sources Générales' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=ar&type=book&specialty=general">
                             <i class="fas fa-book"></i>
-                            <?= $lang == 'ar' ? 'عرض الكتب' : 'Voir les livres' ?>
+                            <?= $lang == 'ar' ? 'الكتب العامة' : 'Livres généraux' ?>
                         </a>
                     </li>
                     <li>
-                        <a href="router.php?module=items&action=add_edit&lang=ar&type=book">
+                        <a href="router.php?module=items&action=list&lang=ar&type=magazine&specialty=general">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'المجلات العامة' : 'Revues générales' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=ar&specialty=general">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة كتاب جديد' : 'Ajouter un livre' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=ar&type=book">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في الكتب المتخصصةة' : 'Rechercher dans les livres arabes' ?>
+                            <?= $lang == 'ar' ? 'إضافة مصدر عام' : 'Ajouter une ressource générale' ?>
                         </a>
                     </li>
                 </ul>
             </div>
 
+            <!-- Journaux arabes -->
             <div class="content-card fade-in">
                 <div class="content-header">
                     <div class="content-icon">
                         <i class="fas fa-newspaper"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المجلات العربية' : 'Magazines Arabes' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'الصحف' : 'Journaux' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
-                        <a href="router.php?module=items&action=list&lang=ar&type=magazine">
+                        <a href="router.php?module=items&action=list&lang=ar&type=newspaper&journal=ech_chaab">
                             <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض المجلات' : 'Voir les revues' ?>
+                            <?= $lang == 'ar' ? 'جريدة الشعب' : 'Journal Ech-Chaab' ?>
                         </a>
                     </li>
                     <li>
-                        <a href="router.php?module=items&action=add_edit&lang=ar&type=magazine">
-                            <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مجلة جديدة' : 'Ajouter une revue' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=ar&type=magazine">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في المجلات العربية' : 'Rechercher dans les magazines arabes' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'الصحف العربية' : 'Journaux Arabes' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=items&action=list&lang=ar&type=newspaper">
-                            <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض الصحف' : 'Voir les journaux' ?>
+                        <a href="router.php?module=items&action=list&lang=ar&type=newspaper&journal=officiel">
+                            <i class="fas fa-scroll"></i>
+                            <?= $lang == 'ar' ? 'الجريدة الرسمية' : 'Journal Officiel' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=ar&type=newspaper">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة صحيفة جديدة' : 'Ajouter un journal' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=ar&type=newspaper">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في الصحف العربية' : 'Rechercher dans les journaux arabes' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-archive"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المواد العامة' : 'Ressources Générales' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=items&action=list&lang=ar&type=general">
-                            <i class="fas fa-archive"></i>
-                            <?= $lang == 'ar' ? 'عرض المواد العامة' : 'Voir les ressources générales' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=add_edit&lang=ar&type=general">
-                            <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مادة عامة' : 'Ajouter une ressource générale' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=ar&type=general">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في المواد العامة العربية' : 'Rechercher dans les ressources générales arabes' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'إحصائيات القسم العربي' : 'Statistiques Section Arabe' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=items&action=statistics&lang=ar">
-                            <i class="fas fa-chart-pie"></i>
-                            <?= $lang == 'ar' ? 'إحصائيات المواد العربية' : 'Statistiques des ressources arabes' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=reports&lang=ar">
-                            <i class="fas fa-file-alt"></i>
-                            <?= $lang == 'ar' ? 'تقارير القسم العربي' : 'Rapports de la section arabe' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=export&lang=ar">
-                            <i class="fas fa-download"></i>
-                            <?= $lang == 'ar' ? 'تصدير بيانات القسم العربي' : 'Exporter les données de la section arabe' ?>
+                            <?= $lang == 'ar' ? 'إضافة عدد صحيفة' : 'Ajouter un numéro de journal' ?>
                         </a>
                     </li>
                 </ul>
@@ -662,182 +694,207 @@ $lang = $_SESSION['lang'] ?? 'ar';
         </div>
 
         <div class="action-buttons">
-            <a href="router.php?module=items&action=add_edit&lang=ar&type=book" class="action-btn">
-                <i class="fas fa-book"></i>
-                <?= $lang == 'ar' ? 'إضافة كتاب عربي' : 'Ajouter un livre arabe' ?>
+            <a href="router.php?module=items&action=search&lang=ar" class="action-btn">
+                <i class="fas fa-search"></i>
+                <?= $lang == 'ar' ? 'البحث في المصادر العربية' : 'Rechercher dans les ressources arabes' ?>
             </a>
-            <a href="router.php?module=items&action=add_edit&lang=ar&type=magazine" class="action-btn">
-                <i class="fas fa-newspaper"></i>
-                <?= $lang == 'ar' ? 'إضافة مجلة عربية' : 'Ajouter un magazine arabe' ?>
-            </a>
-            <a href="router.php?module=items&action=add_edit&lang=ar&type=newspaper" class="action-btn">
-                <i class="fas fa-newspaper"></i>
-                <?= $lang == 'ar' ? 'إضافة صحيفة عربية' : 'Ajouter un journal arabe' ?>
+            <a href="router.php?module=items&action=statistics&lang=ar" class="action-btn">
+                <i class="fas fa-chart-bar"></i>
+                <?= $lang == 'ar' ? 'إحصائيات المصادر العربية' : 'Statistiques des ressources arabes' ?>
             </a>
         </div>
     </div>
 
-    <!-- French Section -->
-    <div id="french" class="section-content">
+    <!-- French Resources Section -->
+    <div id="french-resources" class="section-content">
         <div class="content-grid">
+            <!-- Source spécialisée française -->
             <div class="content-card fade-in">
                 <div class="content-header">
                     <div class="content-icon">
-                        <i class="fas fa-book"></i>
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'الكتب الفرنسية' : 'Livres Français' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - الاقتصاد' : 'Sources Spécialisées - Économie' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
-                        <a href="router.php?module=items&action=list&lang=fr&type=book">
+                        <a href="router.php?module=items&action=list&lang=fr&type=book&specialty=economy">
+                            <i class="fas fa-chart-line"></i>
+                            <?= $lang == 'ar' ? 'كتب الاقتصاد' : 'Livres d\'économie' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=magazine&specialty=economy">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات الاقتصاد' : 'Revues d\'économie' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=fr&specialty=economy">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر اقتصادي' : 'Ajouter une ressource économique' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-balance-scale"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - القانون' : 'Sources Spécialisées - Droit' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=book&specialty=law">
+                            <i class="fas fa-gavel"></i>
+                            <?= $lang == 'ar' ? 'كتب القانون' : 'Livres de droit' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=magazine&specialty=law">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات القانون' : 'Revues juridiques' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=fr&specialty=law">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر قانوني' : 'Ajouter une ressource juridique' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - الإدارة العامة' : 'Sources Spécialisées - Administration Publique' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=book&specialty=public_admin">
+                            <i class="fas fa-university"></i>
+                            <?= $lang == 'ar' ? 'كتب الإدارة العامة' : 'Livres d\'administration publique' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=magazine&specialty=public_admin">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات الإدارة العامة' : 'Revues d\'administration publique' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=fr&specialty=public_admin">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر إداري' : 'Ajouter une ressource administrative' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر المتخصصة - الدبلوماسية' : 'Sources Spécialisées - Diplomatie' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=book&specialty=diplomacy">
+                            <i class="fas fa-handshake"></i>
+                            <?= $lang == 'ar' ? 'كتب الدبلوماسية' : 'Livres de diplomatie' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=magazine&specialty=diplomacy">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'مجلات الدبلوماسية' : 'Revues diplomatiques' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=fr&specialty=diplomacy">
+                            <i class="fas fa-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة مصدر دبلوماسي' : 'Ajouter une ressource diplomatique' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Source générale française -->
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المصادر العامة' : 'Sources Générales' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=list&lang=fr&type=book&specialty=general">
                             <i class="fas fa-book"></i>
-                            <?= $lang == 'ar' ? 'عرض الكتب الفرنسية' : 'Voir les livres français' ?>
+                            <?= $lang == 'ar' ? 'الكتب العامة' : 'Livres généraux' ?>
                         </a>
                     </li>
                     <li>
-                        <a href="router.php?module=items&action=add_edit&lang=fr&type=book">
+                        <a href="router.php?module=items&action=list&lang=fr&type=magazine&specialty=general">
+                            <i class="fas fa-newspaper"></i>
+                            <?= $lang == 'ar' ? 'المجلات العامة' : 'Revues générales' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=add_edit&lang=fr&specialty=general">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة كتاب فرنسي جديد' : 'Ajouter un livre français' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=fr&type=book">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في الكتب الفرنسية' : 'Rechercher dans les livres français' ?>
+                            <?= $lang == 'ar' ? 'إضافة مصدر عام' : 'Ajouter une ressource générale' ?>
                         </a>
                     </li>
                 </ul>
             </div>
 
+            <!-- Journaux français -->
             <div class="content-card fade-in">
                 <div class="content-header">
                     <div class="content-icon">
                         <i class="fas fa-newspaper"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المجلات الفرنسية' : 'Revues Françaises' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'الصحف' : 'Journaux' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
-                        <a href="router.php?module=items&action=list&lang=fr&type=magazine">
+                        <a href="router.php?module=items&action=list&lang=fr&type=newspaper&journal=ech_chaab">
                             <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض المجلات الفرنسية' : 'Voir les revues françaises' ?>
+                            <?= $lang == 'ar' ? 'جريدة الشعب' : 'Journal Ech-Chaab' ?>
                         </a>
                     </li>
                     <li>
-                        <a href="router.php?module=items&action=add_edit&lang=fr&type=magazine">
-                            <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مجلة فرنسية جديدة' : 'Ajouter une revue française' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=fr&type=magazine">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في المجلات الفرنسية' : 'Rechercher dans les revues françaises' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-newspaper"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'الصحف الفرنسية' : 'Journaux Français' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=items&action=list&lang=fr&type=newspaper">
-                            <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض الصحف الفرنسية' : 'Voir les journaux français' ?>
+                        <a href="router.php?module=items&action=list&lang=fr&type=newspaper&journal=officiel">
+                            <i class="fas fa-scroll"></i>
+                            <?= $lang == 'ar' ? 'الجريدة الرسمية' : 'Journal Officiel' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=fr&type=newspaper">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة صحيفة فرنسية جديدة' : 'Ajouter un journal français' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=fr&type=newspaper">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في الصحف الفرنسية' : 'Rechercher dans les journaux français' ?>
+                            <?= $lang == 'ar' ? 'إضافة عدد صحيفة' : 'Ajouter un numéro de journal' ?>
                         </a>
                     </li>
                 </ul>
             </div>
 
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-archive"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المواد العامة الفرنسية' : 'Ressources Générales Françaises' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=items&action=list&lang=fr&type=general">
-                            <i class="fas fa-archive"></i>
-                            <?= $lang == 'ar' ? 'عرض المواد العامة الفرنسية' : 'Voir les ressources générales françaises' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=add_edit&lang=fr&type=general">
-                            <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مادة عامة فرنسية' : 'Ajouter une ressource générale française' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=search&lang=fr&type=general">
-                            <i class="fas fa-search"></i>
-                            <?= $lang == 'ar' ? 'البحث في المواد العامة الفرنسية' : 'Rechercher dans les ressources générales françaises' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'إحصائيات القسم الفرنسي' : 'Statistiques Section Française' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=items&action=statistics&lang=fr">
-                            <i class="fas fa-chart-pie"></i>
-                            <?= $lang == 'ar' ? 'إحصائيات المواد الفرنسية' : 'Statistiques des ressources françaises' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=reports&lang=fr">
-                            <i class="fas fa-file-alt"></i>
-                            <?= $lang == 'ar' ? 'تقارير القسم الفرنسي' : 'Rapports de la section française' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=items&action=export&lang=fr">
-                            <i class="fas fa-download"></i>
-                            <?= $lang == 'ar' ? 'تصدير بيانات القسم الفرنسي' : 'Exporter les données de la section française' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </div>
 
         <div class="action-buttons">
-            <a href="router.php?module=items&action=add_edit&lang=fr&type=book" class="action-btn">
-                <i class="fas fa-book"></i>
-                <?= $lang == 'ar' ? 'إضافة كتاب فرنسي' : 'Ajouter un livre français' ?>
+            <a href="router.php?module=items&action=search&lang=fr" class="action-btn">
+                <i class="fas fa-search"></i>
+                <?= $lang == 'ar' ? 'البحث في المصادر الفرنسية' : 'Rechercher dans les ressources françaises' ?>
             </a>
-            <a href="router.php?module=items&action=add_edit&lang=fr&type=magazine" class="action-btn">
-                <i class="fas fa-newspaper"></i>
-                <?= $lang == 'ar' ? 'إضافة مجلة فرنسية' : 'Ajouter une revue française' ?>
-            </a>
-            <a href="router.php?module=items&action=add_edit&lang=fr&type=newspaper" class="action-btn">
-                <i class="fas fa-newspaper"></i>
-                <?= $lang == 'ar' ? 'إضافة صحيفة فرنسية' : 'Ajouter un journal français' ?>
+            <a href="router.php?module=items&action=statistics&lang=fr" class="action-btn">
+                <i class="fas fa-chart-bar"></i>
+                <?= $lang == 'ar' ? 'إحصائيات المصادر الفرنسية' : 'Statistiques des ressources françaises' ?>
             </a>
         </div>
     </div>

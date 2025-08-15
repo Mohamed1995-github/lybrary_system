@@ -1,52 +1,64 @@
 <?php
-/* modules/items/add_magazine.php */
-require_once __DIR__ . '/../../includes/auth.php';
-if (!isset($_SESSION['uid'])) { header('Location: ../../public/login.php'); exit; }
+/* public/add_newspaper.php - نسخة مبسطة لإضافة الجرائد */
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
+
+if (!isset($_SESSION['uid'])) { 
+    header('Location: login.php'); 
+    exit; 
+}
 
 $lang = $_GET['lang'] ?? 'ar';
-$type = 'magazine'; // Fixed type for magazines
+$type = 'newspaper'; // Fixed type for newspapers
+
+// Newspaper titles - Limited to specified titles
+$newspaper_titles = [
+    'Ech-Chaab' => ['ar' => 'الشعب', 'fr' => 'Ech-Chaab'],
+    'Journal Officiel' => ['ar' => 'الجريدة الرسمية', 'fr' => 'Journal Officiel']
+];
 
 $item = [
-    'magazine_name' => '',
-    'volume_number' => '',
+    'title' => 'Ech-Chaab',
+    'newspaper_number' => '',
     'classification' => ''
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $magazine_name = trim($_POST['magazine_name'] ?? '');
-    $volume_number = trim($_POST['volume_number'] ?? '');
-    $classification = trim($_POST['classification'] ?? '');
+    $title = trim($_POST['title'] ?? '');
+    $newspaper_number = trim($_POST['newspaper_number'] ?? '');
+    $publisher = trim($_POST['classification'] ?? '');
     
     $errors = [];
     
     // Validation
-    if (empty($magazine_name)) {
-        $errors[] = $lang == 'ar' ? 'اسم المجلة مطلوب' : 'Le nom de la revue est requis';
+    if (empty($title)) {
+        $errors[] = $lang == 'ar' ? 'اسم الجريدة مطلوب' : 'Le nom du journal est requis';
     }
     
-    if (empty($volume_number)) {
-        $errors[] = $lang == 'ar' ? 'رقم المجلد مطلوب' : 'Le numéro du volume est requis';
+    if (!in_array($title, array_keys($newspaper_titles))) {
+        $errors[] = $lang == 'ar' ? 'يجب اختيار جريدة من القائمة المحددة' : 'Vous devez sélectionner un journal de la liste spécifiée';
     }
     
-    if (empty($classification)) {
-        $errors[] = $lang == 'ar' ? 'العدد مطلوب' : 'Le numéro est requis';
+    if (empty($newspaper_number)) {
+        $errors[] = $lang == 'ar' ? 'رقم الجريدة مطلوب' : 'Le numéro du journal est requis';
     }
     
-    // If no errors, insert the new magazine
+    if (empty($publisher)) {
+        $errors[] = $lang == 'ar' ? 'الناشر مطلوب' : 'L\'éditeur est requis';
+    }
+    
+    // If no errors, insert the new newspaper
     if (empty($errors)) {
         try {
-            // Utiliser le nom de la revue comme titre principal
-            $title = $magazine_name;
+            $stmt = $pdo->prepare("INSERT INTO items (lang, type, title, publisher, copies, available_copies) VALUES (?,?,?,?,?,?)");
+            $stmt->execute([$lang, $type, $title, $publisher, 1, 1]);
             
-            $stmt = $pdo->prepare("INSERT INTO items (lang, type, title, classification, copies, available_copies, magazine_name, volume_number) VALUES (?,?,?,?,?,?,?,?)");
-            $stmt->execute([$lang, $type, $title, $classification, 1, 1, $magazine_name, $volume_number]);
-            
-            $success = $lang == 'ar' ? 'تم إضافة المجلة بنجاح!' : 'Revue ajoutée avec succès!';
+            $success = $lang == 'ar' ? 'تم إضافة الجريدة بنجاح!' : 'Journal ajouté avec succès!';
             
             // Reset form after successful submission
             $item = [
-                'magazine_name' => '',
-                'volume_number' => '',
+                'title' => 'Ech-Chaab',
+                'newspaper_number' => '',
                 'classification' => ''
             ];
         } catch (PDOException $e) {
@@ -56,9 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $type_info = [
-    'magazine' => [
-        'ar' => ['title' => 'المجلات', 'add' => 'إضافة مجلة جديدة', 'icon' => 'fas fa-newspaper'],
-        'fr' => ['title' => 'Revues', 'add' => 'Ajouter une nouvelle revue', 'icon' => 'fas fa-newspaper']
+    'newspaper' => [
+        'ar' => ['title' => 'الجرائد', 'add' => 'إضافة جريدة جديدة', 'icon' => 'fas fa-newspaper'],
+        'fr' => ['title' => 'Journaux', 'add' => 'Ajouter un nouveau journal', 'icon' => 'fas fa-newspaper']
     ]
 ];
 ?>
@@ -68,10 +80,10 @@ $type_info = [
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= $type_info[$type][$lang]['add'] ?> - Library System</title>
-<link rel="stylesheet" href="../../public/assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="../../public/assets/js/script.js"></script>
+<script src="assets/js/script.js"></script>
 <style>
 .page-container {
     min-height: 100vh;
@@ -98,13 +110,13 @@ $type_info = [
 
 .page-icon {
     font-size: 2rem;
-    color: var(--secondary-color);
+    color: var(--primary-color);
     width: 3rem;
     height: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgb(5 150 105 / 0.1);
+    background: rgb(37 99 235 / 0.1);
     border-radius: var(--radius-lg);
 }
 
@@ -166,13 +178,6 @@ $type_info = [
     font-size: 0.875rem;
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -198,12 +203,16 @@ $type_info = [
 
 .form-input:focus {
     outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 3px rgb(5 150 105 / 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
 }
 
 .form-input::placeholder {
     color: var(--text-light);
+}
+
+.form-select {
+    cursor: pointer;
 }
 
 .form-actions {
@@ -216,7 +225,7 @@ $type_info = [
 }
 
 .btn-primary {
-    background: var(--secondary-color);
+    background: var(--primary-color);
     color: white;
     border: none;
     padding: 1rem 2rem;
@@ -233,9 +242,25 @@ $type_info = [
 }
 
 .btn-primary:hover {
-    background: #059669;
+    background: var(--primary-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
+}
+
+.form-info {
+    background: rgb(37 99 235 / 0.1);
+    border: 1px solid rgb(37 99 235 / 0.2);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--primary-color);
+}
+
+.form-info i {
+    font-size: 1.25rem;
 }
 
 .required-field {
@@ -284,18 +309,18 @@ $type_info = [
     <div class="page-header fade-in">
         <div class="page-title">
             <div class="page-icon">
-                <i class="<?= $type_info[$type][$lang]['icon'] ?>"></i>
+                <i class="fas fa-newspaper"></i>
             </div>
             <div>
                 <h1><?= $type_info[$type][$lang]['add'] ?></h1>
                 <p style="color: var(--text-secondary); margin: 0; font-size: 0.875rem;">
-                    <?= $lang == 'ar' ? 'إضافة مجلة جديدة إلى المكتبة' : 'Ajouter une nouvelle revue à la bibliothèque' ?>
+                    <?= $lang == 'ar' ? 'إضافة جريدة جديدة إلى المكتبة' : 'Ajouter un nouveau journal à la bibliothèque' ?>
                 </p>
             </div>
         </div>
         
         <div class="page-actions">
-            <a href="../../public/router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
+            <a href="router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 <?= $lang == 'ar' ? 'العودة' : 'Retour' ?>
             </a>
@@ -305,12 +330,22 @@ $type_info = [
     <div class="form-card fade-in">
         <div class="form-header">
             <h2 class="form-title">
-                <i class="<?= $type_info[$type][$lang]['icon'] ?>"></i>
-                <?= $type_info[$type][$lang]['add'] ?>
+                <i class="fas fa-newspaper"></i>
+                <?= $lang == 'ar' ? 'معلومات الجريدة الجديدة' : 'Informations du nouveau journal' ?>
             </h2>
             <p class="form-subtitle">
-                <?= $lang == 'ar' ? 'املأ النموذج أدناه لإضافة مجلة جديدة' : 'Remplissez le formulaire ci-dessous pour ajouter une nouvelle revue' ?>
+                <?= $lang == 'ar' ? 'املأ النموذج أدناه لإضافة جريدة جديدة إلى المكتبة' : 'Remplissez le formulaire ci-dessous pour ajouter un nouveau journal à la bibliothèque' ?>
             </p>
+        </div>
+
+        <div class="form-info">
+            <i class="fas fa-info-circle"></i>
+            <div>
+                <strong><?= $lang == 'ar' ? 'نوع المادة:' : 'Type de matériau:' ?></strong> 
+                <?= $lang == 'ar' ? 'جريدة' : 'Journal' ?> | 
+                <strong><?= $lang == 'ar' ? 'اللغة:' : 'Langue:' ?></strong> 
+                <?= strtoupper($lang) ?>
+            </div>
         </div>
 
         <?php if (!empty($errors)): ?>
@@ -331,54 +366,52 @@ $type_info = [
             </div>
         <?php endif; ?>
 
-        <form method="post" id="magazineForm">
-            <div class="form-grid">
-                <!-- Nom de la revue -->
-                <div class="form-group">
-                    <label for="magazine_name" class="form-label">
-                        <i class="fas fa-heading"></i>
-                        <?= $lang == 'ar' ? 'اسم المجلة' : 'Nom de la revue' ?>
-                        <span class="required-field">*</span>
-                    </label>
-                    <input type="text" id="magazine_name" name="magazine_name" class="form-input" 
-                           value="<?= htmlspecialchars($item['magazine_name']) ?>" 
-                           placeholder="<?= $lang == 'ar' ? 'أدخل اسم المجلة' : 'Entrez le nom de la revue' ?>" 
-                           required>
-                </div>
-
-                <!-- Numéro du volume -->
-                <div class="form-group">
-                    <label for="volume_number" class="form-label">
-                        <i class="fas fa-layer-group"></i>
-                        <?= $lang == 'ar' ? 'رقم المجلد' : 'Numéro du volume' ?>
-                        <span class="required-field">*</span>
-                    </label>
-                    <input type="text" id="volume_number" name="volume_number" class="form-input" 
-                           value="<?= htmlspecialchars($item['volume_number']) ?>" 
-                           placeholder="<?= $lang == 'ar' ? 'أدخل رقم المجلد' : 'Entrez le numéro du volume' ?>" 
-                           required>
-                </div>
-
-                <!-- Numéro/Édition -->
-                <div class="form-group">
-                    <label for="classification" class="form-label">
-                        <i class="fas fa-hashtag"></i>
-                        <?= $lang == 'ar' ? 'العدد' : 'Numéro' ?>
-                        <span class="required-field">*</span>
-                    </label>
-                    <input type="text" id="classification" name="classification" class="form-input" 
-                           value="<?= htmlspecialchars($item['classification']) ?>" 
-                           placeholder="<?= $lang == 'ar' ? 'أدخل العدد' : 'Entrez le numéro' ?>" 
-                           required>
-                </div>
+        <form method="post" id="newspaperForm">
+            <div class="form-group">
+                <label for="title" class="form-label">
+                    <i class="fas fa-newspaper"></i>
+                    <?= $lang == 'ar' ? 'اسم الجريدة' : 'Nom du journal' ?>
+                    <span class="required-field">*</span>
+                </label>
+                <select id="title" name="title" class="form-input form-select" required>
+                    <?php foreach ($newspaper_titles as $title_key => $title_names): ?>
+                        <option value="<?= $title_key ?>" <?= $item['title'] == $title_key ? 'selected' : '' ?>>
+                            <?= $title_names[$lang] ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
+
+            <div class="form-group">
+                <label for="newspaper_number" class="form-label">
+                    <i class="fas fa-hashtag"></i>
+                    <?= $lang == 'ar' ? 'رقم الجريدة' : 'Numéro du journal' ?>
+                    <span class="required-field">*</span>
+                </label>
+                <input type="text" id="newspaper_number" name="newspaper_number" class="form-input" 
+                       value="<?= htmlspecialchars($item['newspaper_number']) ?>" 
+                       placeholder="<?= $lang == 'ar' ? 'أدخل رقم الجريدة' : 'Entrez le numéro du journal' ?>" 
+                       required>
+            </div>
+
+                         <div class="form-group">
+                 <label for="classification" class="form-label">
+                     <i class="fas fa-tags"></i>
+                     <?= $lang == 'ar' ? 'الناشر' : 'Éditeur' ?>
+                     <span class="required-field">*</span>
+                 </label>
+                 <input type="text" id="classification" name="classification" class="form-input" 
+                        value="<?= htmlspecialchars($item['classification']) ?>" 
+                        placeholder="<?= $lang == 'ar' ? 'أدخل اسم الناشر' : 'Entrez le nom de l\'éditeur' ?>" 
+                        required>
+             </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-save"></i>
-                    <?= $lang == 'ar' ? 'حفظ المجلة' : 'Enregistrer la revue' ?>
+                    <?= $lang == 'ar' ? 'إضافة الجريدة' : 'Ajouter le journal' ?>
                 </button>
-                <a href="../../public/router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
+                <a href="router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
                     <i class="fas fa-times"></i>
                     <?= $lang == 'ar' ? 'إلغاء' : 'Annuler' ?>
                 </a>
@@ -389,16 +422,16 @@ $type_info = [
 
 <script>
 // Form submission enhancement
-document.getElementById('magazineForm').addEventListener('submit', function(e) {
+document.getElementById('newspaperForm').addEventListener('submit', function(e) {
     const submitBtn = this.querySelector('button[type="submit"]');
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <?= $lang == 'ar' ? 'جاري الحفظ...' : 'Enregistrement...' ?>';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <?= $lang == 'ar' ? 'جاري الإضافة...' : 'Ajout en cours...' ?>';
     submitBtn.disabled = true;
     
     // Show success notification after a short delay
     setTimeout(() => {
         if (window.LibrarySystem) {
             window.LibrarySystem.showNotification(
-                '<?= $lang == 'ar' ? 'تم حفظ المجلة بنجاح!' : 'Revue enregistrée avec succès!' ?>', 
+                '<?= $lang == 'ar' ? 'تم إضافة الجريدة بنجاح!' : 'Journal ajouté avec succès!' ?>', 
                 'success'
             );
         }

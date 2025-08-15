@@ -263,11 +263,28 @@ $lang = $_SESSION['lang'] ?? 'ar';
     background: #059669;
 }
 
-.action-btn.borrowers:hover {
-    background: #047857;
-}
-
-@media (max-width: 768px) {
+    .action-btn.borrowers:hover {
+        background: #047857;
+    }
+    
+    .action-btn.administration {
+        background: var(--primary-color);
+    }
+    
+    .action-btn.administration:hover {
+        background: var(--primary-hover);
+    }
+    
+    .section-tab[data-section="administration"] {
+        background: var(--primary-color);
+        color: white;
+    }
+    
+    .section-tab[data-section="administration"]:hover {
+        background: var(--primary-hover);
+    }
+    
+    @media (max-width: 768px) {
     .dashboard-container {
         padding: 1rem;
     }
@@ -337,7 +354,11 @@ $lang = $_SESSION['lang'] ?? 'ar';
     </nav>
 
     <div class="section-tabs">
-        <button class="section-tab active" data-section="arabic">
+        <button class="section-tab active" data-section="administration">
+            <i class="fas fa-users-cog"></i>
+            <?= $lang == 'ar' ? 'الإدارة' : 'Administration' ?>
+        </button>
+        <button class="section-tab" data-section="arabic">
             <i class="fas fa-book"></i>
             <?= $lang == 'ar' ? 'القسم العربي' : 'Section Arabe' ?>
         </button>
@@ -349,25 +370,157 @@ $lang = $_SESSION['lang'] ?? 'ar';
             <i class="fas fa-handshake"></i>
             <?= $lang == 'ar' ? 'قسم الإعارة' : 'Section Emprunts' ?>
         </button>
-                    <button class="section-tab" data-section="acquisitions">
-                <i class="fas fa-truck"></i>
-                <?= $lang == 'ar' ? 'إدارة التزويد' : 'Gestion des Approvisionnements' ?>
-            </button>
-            <button class="section-tab" data-section="administration">
-                <i class="fas fa-users-cog"></i>
-                <?= $lang == 'ar' ? 'الإدارة' : 'Administration' ?>
-            </button>
+        <button class="section-tab" data-section="acquisitions">
+            <i class="fas fa-truck"></i>
+            <?= $lang == 'ar' ? 'إدارة التزويد' : 'Gestion des Approvisionnements' ?>
+        </button>
+    </div>
+
+    <!-- Administration Section -->
+    <div id="administration" class="section-content active">
+        <div class="content-grid">
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'إدارة الموظفين' : 'Gestion des Employés' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=administration&action=list">
+                            <i class="fas fa-users"></i>
+                            <?= $lang == 'ar' ? 'قائمة الموظفين' : 'Liste des employés' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=add">
+                            <i class="fas fa-user-plus"></i>
+                            <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="modules/administration/permissions_guide.php?lang=<?=$lang?>">
+                            <i class="fas fa-shield-alt"></i>
+                            <?= $lang == 'ar' ? 'دليل الصلاحيات' : 'Guide des permissions' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'التقارير والإحصائيات' : 'Rapports et Statistiques' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=administration&action=reports">
+                            <i class="fas fa-chart-line"></i>
+                            <?= $lang == 'ar' ? 'التقارير العامة' : 'Rapports généraux' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=statistics">
+                            <i class="fas fa-chart-pie"></i>
+                            <?= $lang == 'ar' ? 'الإحصائيات' : 'Statistiques' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=activity">
+                            <i class="fas fa-history"></i>
+                            <?= $lang == 'ar' ? 'سجل النشاطات' : 'Journal d\'activités' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'إعدادات النظام' : 'Paramètres Système' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=administration&action=settings">
+                            <i class="fas fa-cogs"></i>
+                            <?= $lang == 'ar' ? 'الإعدادات العامة' : 'Paramètres généraux' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=backup">
+                            <i class="fas fa-database"></i>
+                            <?= $lang == 'ar' ? 'النسخ الاحتياطي' : 'Sauvegarde' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=logs">
+                            <i class="fas fa-file-alt"></i>
+                            <?= $lang == 'ar' ? 'سجلات النظام' : 'Logs système' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'الأمان والصلاحيات' : 'Sécurité et Permissions' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=administration&action=permissions">
+                            <i class="fas fa-user-shield"></i>
+                            <?= $lang == 'ar' ? 'إدارة الصلاحيات' : 'Gérer les permissions' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=roles">
+                            <i class="fas fa-user-tag"></i>
+                            <?= $lang == 'ar' ? 'إدارة الأدوار' : 'Gérer les rôles' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=administration&action=security">
+                            <i class="fas fa-lock"></i>
+                            <?= $lang == 'ar' ? 'إعدادات الأمان' : 'Paramètres de sécurité' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="router.php?module=administration&action=add" class="action-btn administration">
+                <i class="fas fa-user-plus"></i>
+                <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
+            </a>
+            <a href="router.php?module=administration&action=reports" class="action-btn">
+                <i class="fas fa-chart-bar"></i>
+                <?= $lang == 'ar' ? 'عرض التقارير' : 'Voir les rapports' ?>
+            </a>
+            <a href="router.php?module=administration&action=settings" class="action-btn">
+                <i class="fas fa-cog"></i>
+                <?= $lang == 'ar' ? 'إعدادات النظام' : 'Paramètres système' ?>
+            </a>
+        </div>
     </div>
 
     <!-- Arabic Section -->
-    <div id="arabic" class="section-content active">
+    <div id="arabic" class="section-content">
         <div class="content-grid">
             <div class="content-card fade-in">
                 <div class="content-header">
                     <div class="content-icon">
                         <i class="fas fa-book"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'الكتب العربية' : 'Livres Arabes' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'الكتب المتخصصةة' : 'Livres Arabes' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
@@ -380,6 +533,12 @@ $lang = $_SESSION['lang'] ?? 'ar';
                         <a href="router.php?module=items&action=add_edit&lang=ar&type=book">
                             <i class="fas fa-plus"></i>
                             <?= $lang == 'ar' ? 'إضافة كتاب جديد' : 'Ajouter un livre' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=ar&type=book">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في الكتب المتخصصةة' : 'Rechercher dans les livres arabes' ?>
                         </a>
                     </li>
                 </ul>
@@ -396,13 +555,19 @@ $lang = $_SESSION['lang'] ?? 'ar';
                     <li>
                         <a href="router.php?module=items&action=list&lang=ar&type=magazine">
                             <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض المجلات' : 'Voir les magazines' ?>
+                            <?= $lang == 'ar' ? 'عرض المجلات' : 'Voir les revues' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=ar&type=magazine">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مجلة جديدة' : 'Ajouter un magazine' ?>
+                            <?= $lang == 'ar' ? 'إضافة مجلة جديدة' : 'Ajouter une revue' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=ar&type=magazine">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في المجلات العربية' : 'Rechercher dans les magazines arabes' ?>
                         </a>
                     </li>
                 </ul>
@@ -428,6 +593,12 @@ $lang = $_SESSION['lang'] ?? 'ar';
                             <?= $lang == 'ar' ? 'إضافة صحيفة جديدة' : 'Ajouter un journal' ?>
                         </a>
                     </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=ar&type=newspaper">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في الصحف العربية' : 'Rechercher dans les journaux arabes' ?>
+                        </a>
+                    </li>
                 </ul>
             </div>
 
@@ -436,23 +607,73 @@ $lang = $_SESSION['lang'] ?? 'ar';
                     <div class="content-icon">
                         <i class="fas fa-archive"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المواد العامة' : 'Matériaux Généraux' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المواد العامة' : 'Ressources Générales' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
                         <a href="router.php?module=items&action=list&lang=ar&type=general">
                             <i class="fas fa-archive"></i>
-                            <?= $lang == 'ar' ? 'عرض المواد العامة' : 'Voir les matériaux généraux' ?>
+                            <?= $lang == 'ar' ? 'عرض المواد العامة' : 'Voir les ressources générales' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=ar&type=general">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مادة عامة' : 'Ajouter un matériau' ?>
+                            <?= $lang == 'ar' ? 'إضافة مادة عامة' : 'Ajouter une ressource générale' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=ar&type=general">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في المواد العامة العربية' : 'Rechercher dans les ressources générales arabes' ?>
                         </a>
                     </li>
                 </ul>
             </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'إحصائيات القسم العربي' : 'Statistiques Section Arabe' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=statistics&lang=ar">
+                            <i class="fas fa-chart-pie"></i>
+                            <?= $lang == 'ar' ? 'إحصائيات المواد العربية' : 'Statistiques des ressources arabes' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=reports&lang=ar">
+                            <i class="fas fa-file-alt"></i>
+                            <?= $lang == 'ar' ? 'تقارير القسم العربي' : 'Rapports de la section arabe' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=export&lang=ar">
+                            <i class="fas fa-download"></i>
+                            <?= $lang == 'ar' ? 'تصدير بيانات القسم العربي' : 'Exporter les données de la section arabe' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="router.php?module=items&action=add_edit&lang=ar&type=book" class="action-btn">
+                <i class="fas fa-book"></i>
+                <?= $lang == 'ar' ? 'إضافة كتاب عربي' : 'Ajouter un livre arabe' ?>
+            </a>
+            <a href="router.php?module=items&action=add_edit&lang=ar&type=magazine" class="action-btn">
+                <i class="fas fa-newspaper"></i>
+                <?= $lang == 'ar' ? 'إضافة مجلة عربية' : 'Ajouter un magazine arabe' ?>
+            </a>
+            <a href="router.php?module=items&action=add_edit&lang=ar&type=newspaper" class="action-btn">
+                <i class="fas fa-newspaper"></i>
+                <?= $lang == 'ar' ? 'إضافة صحيفة عربية' : 'Ajouter un journal arabe' ?>
+            </a>
         </div>
     </div>
 
@@ -470,13 +691,19 @@ $lang = $_SESSION['lang'] ?? 'ar';
                     <li>
                         <a href="router.php?module=items&action=list&lang=fr&type=book">
                             <i class="fas fa-book"></i>
-                            <?= $lang == 'ar' ? 'عرض الكتب' : 'Voir les livres' ?>
+                            <?= $lang == 'ar' ? 'عرض الكتب الفرنسية' : 'Voir les livres français' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=fr&type=book">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة كتاب جديد' : 'Ajouter un livre' ?>
+                            <?= $lang == 'ar' ? 'إضافة كتاب فرنسي جديد' : 'Ajouter un livre français' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=fr&type=book">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في الكتب الفرنسية' : 'Rechercher dans les livres français' ?>
                         </a>
                     </li>
                 </ul>
@@ -487,19 +714,25 @@ $lang = $_SESSION['lang'] ?? 'ar';
                     <div class="content-icon">
                         <i class="fas fa-newspaper"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المجلات الفرنسية' : 'Magazines Français' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المجلات الفرنسية' : 'Revues Françaises' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
                         <a href="router.php?module=items&action=list&lang=fr&type=magazine">
                             <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض المجلات' : 'Voir les magazines' ?>
+                            <?= $lang == 'ar' ? 'عرض المجلات الفرنسية' : 'Voir les revues françaises' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=fr&type=magazine">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مجلة جديدة' : 'Ajouter un magazine' ?>
+                            <?= $lang == 'ar' ? 'إضافة مجلة فرنسية جديدة' : 'Ajouter une revue française' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=fr&type=magazine">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في المجلات الفرنسية' : 'Rechercher dans les revues françaises' ?>
                         </a>
                     </li>
                 </ul>
@@ -516,13 +749,19 @@ $lang = $_SESSION['lang'] ?? 'ar';
                     <li>
                         <a href="router.php?module=items&action=list&lang=fr&type=newspaper">
                             <i class="fas fa-newspaper"></i>
-                            <?= $lang == 'ar' ? 'عرض الصحف' : 'Voir les journaux' ?>
+                            <?= $lang == 'ar' ? 'عرض الصحف الفرنسية' : 'Voir les journaux français' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=fr&type=newspaper">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة صحيفة جديدة' : 'Ajouter un journal' ?>
+                            <?= $lang == 'ar' ? 'إضافة صحيفة فرنسية جديدة' : 'Ajouter un journal français' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=fr&type=newspaper">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في الصحف الفرنسية' : 'Rechercher dans les journaux français' ?>
                         </a>
                     </li>
                 </ul>
@@ -533,23 +772,73 @@ $lang = $_SESSION['lang'] ?? 'ar';
                     <div class="content-icon">
                         <i class="fas fa-archive"></i>
                     </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'المواد العامة' : 'Matériaux Généraux' ?></h2>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'المواد العامة الفرنسية' : 'Ressources Générales Françaises' ?></h2>
                 </div>
                 <ul class="content-list">
                     <li>
                         <a href="router.php?module=items&action=list&lang=fr&type=general">
                             <i class="fas fa-archive"></i>
-                            <?= $lang == 'ar' ? 'عرض المواد العامة' : 'Voir les matériaux généraux' ?>
+                            <?= $lang == 'ar' ? 'عرض المواد العامة الفرنسية' : 'Voir les ressources générales françaises' ?>
                         </a>
                     </li>
                     <li>
                         <a href="router.php?module=items&action=add_edit&lang=fr&type=general">
                             <i class="fas fa-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة مادة عامة' : 'Ajouter un matériau' ?>
+                            <?= $lang == 'ar' ? 'إضافة مادة عامة فرنسية' : 'Ajouter une ressource générale française' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=search&lang=fr&type=general">
+                            <i class="fas fa-search"></i>
+                            <?= $lang == 'ar' ? 'البحث في المواد العامة الفرنسية' : 'Rechercher dans les ressources générales françaises' ?>
                         </a>
                     </li>
                 </ul>
             </div>
+
+            <div class="content-card fade-in">
+                <div class="content-header">
+                    <div class="content-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h2 class="content-title"><?= $lang == 'ar' ? 'إحصائيات القسم الفرنسي' : 'Statistiques Section Française' ?></h2>
+                </div>
+                <ul class="content-list">
+                    <li>
+                        <a href="router.php?module=items&action=statistics&lang=fr">
+                            <i class="fas fa-chart-pie"></i>
+                            <?= $lang == 'ar' ? 'إحصائيات المواد الفرنسية' : 'Statistiques des ressources françaises' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=reports&lang=fr">
+                            <i class="fas fa-file-alt"></i>
+                            <?= $lang == 'ar' ? 'تقارير القسم الفرنسي' : 'Rapports de la section française' ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="router.php?module=items&action=export&lang=fr">
+                            <i class="fas fa-download"></i>
+                            <?= $lang == 'ar' ? 'تصدير بيانات القسم الفرنسي' : 'Exporter les données de la section française' ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="router.php?module=items&action=add_edit&lang=fr&type=book" class="action-btn">
+                <i class="fas fa-book"></i>
+                <?= $lang == 'ar' ? 'إضافة كتاب فرنسي' : 'Ajouter un livre français' ?>
+            </a>
+            <a href="router.php?module=items&action=add_edit&lang=fr&type=magazine" class="action-btn">
+                <i class="fas fa-newspaper"></i>
+                <?= $lang == 'ar' ? 'إضافة مجلة فرنسية' : 'Ajouter une revue française' ?>
+            </a>
+            <a href="router.php?module=items&action=add_edit&lang=fr&type=newspaper" class="action-btn">
+                <i class="fas fa-newspaper"></i>
+                <?= $lang == 'ar' ? 'إضافة صحيفة فرنسية' : 'Ajouter un journal français' ?>
+            </a>
         </div>
     </div>
 
@@ -652,41 +941,6 @@ $lang = $_SESSION['lang'] ?? 'ar';
             <a href="router.php?module=acquisitions&action=add" class="action-btn acquisition">
                 <i class="fas fa-truck"></i>
                 <?= $lang == 'ar' ? 'إضافة تزويد جديد' : 'Nouvel approvisionnement' ?>
-            </a>
-        </div>
-    </div>
-
-    <!-- Administration Section -->
-    <div id="administration" class="section-content">
-        <div class="content-grid">
-            <div class="content-card fade-in">
-                <div class="content-header">
-                    <div class="content-icon">
-                        <i class="fas fa-users-cog"></i>
-                    </div>
-                    <h2 class="content-title"><?= $lang == 'ar' ? 'الإدارة' : 'Administration' ?></h2>
-                </div>
-                <ul class="content-list">
-                    <li>
-                        <a href="router.php?module=administration&action=list">
-                            <i class="fas fa-users"></i>
-                            <?= $lang == 'ar' ? 'قائمة الموظفين' : 'Liste des employés' ?>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="router.php?module=administration&action=add">
-                            <i class="fas fa-user-plus"></i>
-                            <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="action-buttons">
-            <a href="router.php?module=administration&action=add" class="action-btn administration">
-                <i class="fas fa-user-plus"></i>
-                <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
             </a>
         </div>
     </div>

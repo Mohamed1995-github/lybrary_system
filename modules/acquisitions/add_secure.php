@@ -146,7 +146,7 @@ $csrf_token = $security->generateCSRFToken();
         <header>
             <h1><?=$lang=='ar'?'إضافة استحواذ جديد':'Ajouter une nouvelle acquisition'?></h1>
             <nav>
-                <a href="../../public/dashboard.php?lang=<?=$lang?>"><?=$lang=='ar'?'الرئيسية':'Accueil'?></a>
+                <a href=" http://localhost/library_system/public/dashboard.php?lang=<?=$lang?>"><?=$lang=='ar'?'الرئيسية':'Accueil'?></a>
                 <a href="../../public/router.php?module=acquisitions&action=list&lang=<?=$lang?>"><?=$lang=='ar'?'قائمة الاستحواذات':'Liste des acquisitions'?></a>
             </nav>
         </header>

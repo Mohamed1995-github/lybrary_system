@@ -1,27 +1,12 @@
 <?php
-/* modules/items/add_book.php */
-require_once __DIR__ . '/../../includes/auth.php';
-require_once __DIR__ . '/../../includes/permissions.php';
+/* public/add_book.php - نسخة مبسطة لإضافة الكتب */
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../config/db.php';
 
 if (!isset($_SESSION['uid'])) { 
-    header('Location: ../../public/login.php'); 
+    header('Location: login.php'); 
     exit; 
 }
-
-// Vérification des permissions pour l'ajout de livres
-$requiredPermissions = ['إدارة الكتب', 'Gestion des livres'];
-$accessLevel = getEmployeeAccessLevel();
-
-if (!hasAnyPermission($requiredPermissions) && $accessLevel !== 'admin') {
-    $log_entry = date('Y-m-d H:i:s') . " - User: {$_SESSION['uid']} - UNAUTHORIZED_ACCESS to add_book.php - IP: {$_SERVER['REMOTE_ADDR']}\n";
-    file_put_contents(__DIR__ . '/../../logs/security.log', $log_entry, FILE_APPEND | LOCK_EX);
-    header('Location: ../../public/error.php?code=403&lang=' . $lang);
-    exit;
-}
-
-// Log de l'accès autorisé
-$log_entry = date('Y-m-d H:i:s') . " - User: {$_SESSION['uid']} - AUTHORIZED_ACCESS to add_book.php - IP: {$_SERVER['REMOTE_ADDR']}\n";
-file_put_contents(__DIR__ . '/../../logs/access.log', $log_entry, FILE_APPEND | LOCK_EX);
 
 $lang = $_GET['lang'] ?? 'ar';
 $type = 'book'; // Fixed type for books
@@ -148,10 +133,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?= $lang == 'ar' ? 'إضافة كتاب جديد' : 'Ajouter un nouveau livre' ?> - Library System</title>
-<link rel="stylesheet" href="../../public/assets/css/style.css">
+<link rel="stylesheet" href="assets/css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="../../public/assets/js/script.js"></script>
+<script src="assets/js/script.js"></script>
 <style>
 .page-container {
     min-height: 100vh;
@@ -460,7 +445,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class="page-actions">
-            <a href="../../public/router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
+            <a href="router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 <?= $lang == 'ar' ? 'العودة' : 'Retour' ?>
             </a>
@@ -689,7 +674,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-save"></i>
                     <?= $lang == 'ar' ? 'إضافة الكتاب' : 'Ajouter le livre' ?>
                 </button>
-                <a href="../../public/router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
+                <a href="router.php?module=items&action=list&lang=<?=$lang?>&type=<?=$type?>" class="action-btn btn-secondary">
                     <i class="fas fa-times"></i>
                     <?= $lang == 'ar' ? 'إلغاء' : 'Annuler' ?>
                 </a>

@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If no errors, insert the new newspaper
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("INSERT INTO items (lang, type, title, classification, copies_total, copies_in, newspaper_number) VALUES (?,?,?,?,?,?,?)");
+            $stmt = $pdo->prepare("INSERT INTO items (lang, type, title, classification, copies, available_copies, newspaper_number) VALUES (?,?,?,?,?,?,?)");
             $stmt->execute([$lang, $type, $title, $classification, 1, 1, $newspaper_number]);
             
             $success = $lang == 'ar' ? 'تم إضافة الجريدة بنجاح!' : 'Journal ajouté avec succès!';

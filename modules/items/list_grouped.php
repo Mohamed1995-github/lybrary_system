@@ -472,7 +472,7 @@ $fieldIcons = [
                 <i class="fas fa-list"></i>
                 <?= $lang == 'ar' ? 'عرض عادي' : 'Vue normale' ?>
             </a>
-            <a href="../../public/dashboard.php" class="action-btn btn-secondary">
+                         <a href="http://localhost/library_system/public/dashboard.php?lang=<?=$lang?>" class="action-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 <?= $lang == 'ar' ? 'العودة' : 'Retour' ?>
             </a>
@@ -484,7 +484,7 @@ $fieldIcons = [
             <i class="fas fa-list"></i>
             <?= $lang == 'ar' ? 'عرض عادي' : 'Vue normale' ?>
         </a>
-        <a href="list_grouped.php?lang=<?=$lang?>&type=<?=$type?>" class="toggle-btn active">
+                 <a href="../../public/router.php?module=items&action=list_grouped&lang=<?=$lang?>&type=<?=$type?>" class="toggle-btn active">
             <i class="fas fa-layer-group"></i>
             <?= $lang == 'ar' ? 'عرض مصنف' : 'Vue classée' ?>
         </a>
@@ -568,8 +568,8 @@ $fieldIcons = [
                                 <div class="item-status">
                                     <div>
                                         <?php
-                                        $available = $item['copies_in'];
-                                        $total = $item['copies_total'];
+                                        $available = $item['available_copies'];
+                                        $total = $item['copies'];
                                         $percentage = $total > 0 ? ($available / $total) * 100 : 0;
                                         
                                         if ($percentage >= 50) {
@@ -592,11 +592,11 @@ $fieldIcons = [
                                         </div>
                                     </div>
                                     <div class="item-actions">
-                                        <a href="../../public/router.php?module=items&action=add_edit&id=<?=$item["id']?>" class="action-icon action-edit" 
+                                        <a href="../../public/router.php?module=items&action=add_edit&id=<?=$item['id']?>" class="action-icon action-edit" 
                                            title="<?= $lang == 'ar' ? 'تعديل' : 'Modifier' ?>">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="../../public/router.php?module=items&action=delete&id=<?=$item["id']?>" class="action-icon action-delete"
+                                        <a href="../../public/router.php?module=items&action=delete&id=<?=$item['id']?>" class="action-icon action-delete"
                                            onclick="return confirm('<?= $lang == 'ar' ? 'هل أنت متأكد من الحذف؟' : 'Êtes-vous sûr de vouloir supprimer ?' ?>')"
                                            title="<?= $lang == 'ar' ? 'حذف' : 'Supprimer' ?>">
                                             <i class="fas fa-trash"></i>

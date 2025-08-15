@@ -1,7 +1,7 @@
 <?php
 /* modules/administration/list.php */
-require_once '../../config/db.php';
-require_once '../../includes/auth.php';
+require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../includes/auth.php';
 
 // التحقق من تسجيل الدخول
 if (!isset($_SESSION['uid'])) { header('Location: ../../public/login.php'); exit; }
@@ -11,8 +11,8 @@ $lang = $_GET['lang'] ?? 'ar';
 
 // الحصول على قائمة الموظفين
 try {
-    $stmt = $pdo->prepare("SELECT * FROM employees WHERE lang = ? ORDER BY name ASC");
-    $stmt->execute([$lang]);
+    $stmt = $pdo->prepare("SELECT * FROM employees ORDER BY name ASC");
+    $stmt->execute();
     $employees = $stmt->fetchAll();
 } catch (PDOException $e) {
     $employees = [];
@@ -166,6 +166,77 @@ if (isset($_POST['delete_id'])) {
             font-size: 0.75rem;
             font-weight: 500;
         }
+        
+        .admin-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .admin-section h2 {
+            color: var(--primary-color);
+            margin: 0 0 16px 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .admin-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+        
+        .admin-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .admin-btn.warning {
+            background: #ffc107;
+            color: #212529;
+        }
     </style>
 </head>
 <body>
@@ -174,7 +245,7 @@ if (isset($_POST['delete_id'])) {
         <header class="header">
             <div class="header-content">
                 <div class="header-left">
-                    <a href="../../public/dashboard.php?lang=<?=$lang?>" class="back-btn">
+                    <a href="http://localhost/library_system/public/dashboard.php?lang=<?=$lang?>" class="back-btn">
                         <i class="fas fa-arrow-left"></i>
                         <?= $lang == 'ar' ? 'العودة للوحة التحكم' : 'Retour au tableau de bord' ?>
                     </a>
@@ -188,17 +259,67 @@ if (isset($_POST['delete_id'])) {
             </div>
         </header>
 
+        <!-- قسم الإدارة -->
+        <div class="admin-section">
+            <h2>
+                <i class="fas fa-cogs"></i>
+                <?= $lang == 'ar' ? 'قسم الإدارة' : 'Section Administration' ?>
+            </h2>
+            
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-number"><?= count($employees) ?></div>
+                    <div class="stat-label"><?= $lang == 'ar' ? 'إجمالي الموظفين' : 'Total employés' ?></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><?= count(array_filter($employees, function($emp) { return strpos($emp['access_rights'], 'admin') !== false; })) ?></div>
+                    <div class="stat-label"><?= $lang == 'ar' ? 'المديرين' : 'Administrateurs' ?></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><?= count(array_filter($employees, function($emp) { return strpos($emp['access_rights'], 'librarian') !== false; })) ?></div>
+                    <div class="stat-label"><?= $lang == 'ar' ? 'أمناء المكتبة' : 'Bibliothécaires' ?></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number"><?= count(array_filter($employees, function($emp) { return strpos($emp['access_rights'], 'assistant') !== false; })) ?></div>
+                    <div class="stat-label"><?= $lang == 'ar' ? 'المساعدين' : 'Assistants' ?></div>
+                </div>
+            </div>
+            
+            <div class="admin-actions">
+                <a href="../../public/router.php?module=administration&action=add&lang=<?=$lang?>" class="admin-btn">
+                    <i class="fas fa-user-plus"></i>
+                    <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
+                </a>
+                <a href="permissions_guide.php?lang=<?=$lang?>" class="admin-btn secondary">
+                    <i class="fas fa-shield-alt"></i>
+                    <?= $lang == 'ar' ? 'إدارة الصلاحيات' : 'Gérer les permissions' ?>
+                </a>
+                <a href="../../public/router.php?module=administration&action=reports&lang=<?=$lang?>" class="admin-btn secondary">
+                    <i class="fas fa-chart-bar"></i>
+                    <?= $lang == 'ar' ? 'التقارير' : 'Rapports' ?>
+                </a>
+                <a href="../../public/router.php?module=administration&action=settings&lang=<?=$lang?>" class="admin-btn warning">
+                    <i class="fas fa-cog"></i>
+                    <?= $lang == 'ar' ? 'إعدادات النظام' : 'Paramètres système' ?>
+                </a>
+            </div>
+        </div>
+
         <!-- Actions -->
         <div class="actions-bar">
             <a href="../../public/router.php?module=administration&action=add&lang=<?=$lang?>" class="action-btn btn-primary">
                 <i class="fas fa-plus"></i>
                 <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
             </a>
+            <a href="../../public/router.php?module=administration&action=reports&lang=<?=$lang?>" class="action-btn btn-secondary">
+                <i class="fas fa-chart-line"></i>
+                <?= $lang == 'ar' ? 'التقارير والإحصائيات' : 'Rapports et Statistiques' ?>
+            </a>
             <a href="permissions_guide.php?lang=<?=$lang?>" class="action-btn btn-secondary">
                 <i class="fas fa-shield-alt"></i>
                 <?= $lang == 'ar' ? 'دليل الصلاحيات' : 'Guide des permissions' ?>
             </a>
-            <a href="../../public/dashboard.php?lang=<?=$lang?>" class="action-btn btn-secondary">
+            <a href="http://localhost/library_system/public/dashboard.php?lang=<?=$lang?>" class="action-btn btn-secondary">
                 <i class="fas fa-home"></i>
                 <?= $lang == 'ar' ? 'الرئيسية' : 'Accueil' ?>
             </a>
@@ -224,6 +345,13 @@ if (isset($_POST['delete_id'])) {
                     echo '<h4>' . ($lang == 'ar' ? 'تم حذف الموظف بنجاح!' : 'Employé supprimé avec succès!') . '</h4>';
                     echo '</div>';
                     echo '</div>';
+                } elseif ($_GET['success'] == 'updated') {
+                    echo '<div class="alert alert-success">';
+                    echo '<i class="fas fa-check-circle"></i>';
+                    echo '<div>';
+                    echo '<h4>' . ($lang == 'ar' ? 'تم تحديث بيانات الموظف بنجاح!' : 'Données de l\'employé mises à jour avec succès!') . '</h4>';
+                    echo '</div>';
+                    echo '</div>';
                 }
             }
             
@@ -233,11 +361,20 @@ if (isset($_POST['delete_id'])) {
                     echo '<i class="fas fa-exclamation-triangle"></i>';
                     echo '<div>';
                     echo '<h4>' . ($lang == 'ar' ? 'خطأ في حذف الموظف' : 'Erreur lors de la suppression') . '</h4>';
+                    echo '<p>' . ($lang == 'ar' ? 'لا يمكن حذف الموظف لوجود بيانات مرتبطة به' : 'Impossible de supprimer l\'employé car des données sont liées') . '</p>';
+                    echo '</div>';
+                    echo '</div>';
+                } elseif ($_GET['error'] == 'update_failed') {
+                    echo '<div class="alert alert-error">';
+                    echo '<i class="fas fa-exclamation-triangle"></i>';
+                    echo '<div>';
+                    echo '<h4>' . ($lang == 'ar' ? 'خطأ في تحديث بيانات الموظف' : 'Erreur lors de la mise à jour') . '</h4>';
                     echo '</div>';
                     echo '</div>';
                 }
             }
             ?>
+            
             <?php if (empty($employees)): ?>
                 <div class="empty-state">
                     <i class="fas fa-users"></i>
@@ -246,6 +383,10 @@ if (isset($_POST['delete_id'])) {
                     <a href="../../public/router.php?module=administration&action=add&lang=<?=$lang?>" class="action-btn btn-primary">
                         <i class="fas fa-plus"></i>
                         <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
+                    </a>
+                    <a href="../../public/router.php?module=administration&action=reports&lang=<?=$lang?>" class="action-btn btn-secondary">
+                        <i class="fas fa-chart-line"></i>
+                        <?= $lang == 'ar' ? 'التقارير والإحصائيات' : 'Rapports et Statistiques' ?>
                     </a>
                 </div>
             <?php else: ?>
@@ -264,6 +405,16 @@ if (isset($_POST['delete_id'])) {
                                 </div>
                                 
                                 <div class="detail-item">
+                                    <span class="detail-label"><?= $lang == 'ar' ? 'البريد الإلكتروني' : 'Email' ?></span>
+                                    <span class="detail-value"><?= htmlspecialchars($employee['email'] ?? ($lang == 'ar' ? 'غير محدد' : 'Non spécifié')) ?></span>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label"><?= $lang == 'ar' ? 'رقم الهاتف' : 'Téléphone' ?></span>
+                                    <span class="detail-value"><?= htmlspecialchars($employee['phone'] ?? ($lang == 'ar' ? 'غير محدد' : 'Non spécifié')) ?></span>
+                                </div>
+                                
+                                <div class="detail-item">
                                     <span class="detail-label"><?= $lang == 'ar' ? 'حقوق الوصول' : 'Droits d\'accès' ?></span>
                                     <div class="access-rights">
                                         <?php 
@@ -279,10 +430,15 @@ if (isset($_POST['delete_id'])) {
                                         ?>
                                     </div>
                                 </div>
+                                
+                                <div class="detail-item">
+                                    <span class="detail-label"><?= $lang == 'ar' ? 'تاريخ الإضافة' : 'Date d\'ajout' ?></span>
+                                    <span class="detail-value"><?= htmlspecialchars($employee['created_at']) ?></span>
+                                </div>
                             </div>
                             
                             <div class="employee-actions">
-                                <a href="../../public/router.php?module=administration&action=edit&id=<?= $employee["id'] ?>&lang=<?=$lang?>" class="btn-edit">
+                                <a href="../../public/router.php?module=administration&action=edit&id=<?= $employee["id"] ?>&lang=<?=$lang?>" class="btn-edit">
                                     <i class="fas fa-edit"></i>
                                     <?= $lang == 'ar' ? 'تعديل' : 'Modifier' ?>
                                 </a>

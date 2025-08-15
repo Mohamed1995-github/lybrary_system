@@ -1,5 +1,5 @@
 <?php
-$dsn  = 'mysql:host=localhost;dbname=library_db;charset=utf8mb4';
+$dsn  = 'mysql:host=localhost;dbname=library_system;charset=utf8mb4';
 $user = 'root';
 $pass = '';
 $options = [

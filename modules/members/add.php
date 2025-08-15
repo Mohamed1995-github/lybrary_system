@@ -310,7 +310,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         
         <div class="page-actions">
-            <a href="../../public/dashboard.php" class="action-btn btn-secondary">
+            <a href=" http://localhost/library_system/public/dashboard.php" class="action-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 <?= $lang == 'ar' ? 'العودة' : 'Retour' ?>
             </a>
@@ -426,7 +426,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-save"></i>
                     <?= $lang == 'ar' ? 'إضافة العضو' : 'Ajouter le membre' ?>
                 </button>
-                <a href="../../public/dashboard.php" class="action-btn btn-secondary">
+                <a href=" http://localhost/library_system/public/dashboard.php" class="action-btn btn-secondary">
                     <i class="fas fa-times"></i>
                     <?= $lang == 'ar' ? 'إلغاء' : 'Annuler' ?>
                 </a>

@@ -1,8 +1,8 @@
 <?php
-/* Copie directe de add_magazine.php pour accès public */
+/* public/add_magazine.php - Version simplifiée */
 require_once __DIR__ . '/../includes/auth.php';
 
-// التحقق من تسجيل الدخول
+// Vérifier l'authentification
 if (!isset($_SESSION['uid'])) { 
     header('Location: login.php'); 
     exit; 
@@ -134,10 +134,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             justify-content: center;
             margin-top: 2rem;
         }
+        .user-info {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- Informations utilisateur -->
+        <div class="user-info">
+            <i class="fas fa-user"></i>
+            <?= $lang == 'ar' ? 'المستخدم: ' : 'Utilisateur: ' ?>
+            <?= $_SESSION['username'] ?? $_SESSION['uid'] ?>
+            | 
+            <?= $lang == 'ar' ? 'الوصول: كامل' : 'Accès: Complet' ?>
+        </div>
+
         <div class="header">
             <h1><?= $lang == 'ar' ? 'إضافة مجلة جديدة' : 'Ajouter une nouvelle revue' ?></h1>
             <p><?= $lang == 'ar' ? 'أدخل معلومات المجلة الجديدة' : 'Saisissez les informations de la nouvelle revue' ?></p>

@@ -1,5 +1,6 @@
 <?php
 /* modules/items/list.php */
+require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../includes/auth.php';
 
 // التحقق من تسجيل الدخول
@@ -13,9 +14,30 @@ $lang = $_GET['lang'] ?? 'ar';
 $type = $_GET['type'] ?? 'book';
 
 // استدعاء المواد حسب اللغة والنوع
-$stmt = $pdo->prepare("SELECT * FROM items WHERE lang = ? AND type = ? ORDER BY title");
-$stmt->execute([$lang, $type]);
+$category_filter = $_GET['category'] ?? '';
+
+if (!empty($category_filter)) {
+    $stmt = $pdo->prepare("SELECT * FROM items WHERE lang = ? AND type = ? AND category = ? ORDER BY title");
+    $stmt->execute([$lang, $type, $category_filter]);
+} else {
+    $stmt = $pdo->prepare("SELECT * FROM items WHERE lang = ? AND type = ? ORDER BY title");
+    $stmt->execute([$lang, $type]);
+}
 $rows = $stmt->fetchAll();
+
+// Définir les catégories spécifiques pour les livres
+if ($type == 'book') {
+    if ($lang == 'ar') {
+        $categories = ['إدارة', 'اقتصاد', 'قانون', 'دبلوماسية'];
+    } else {
+        $categories = ['Administration', 'Économie', 'Droit', 'Diplomatie'];
+    }
+} else {
+    // Récupérer toutes les catégories disponibles pour les autres types
+    $stmt = $pdo->prepare("SELECT DISTINCT category FROM items WHERE lang = ? AND type = ? AND category IS NOT NULL AND category != '' ORDER BY category");
+    $stmt->execute([$lang, $type]);
+    $categories = $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
 
 // Get type-specific information
 $type_info = [
@@ -311,6 +333,32 @@ tr:hover {
         </div>
     </div>
 
+    <!-- رسائل النجاح والخطأ -->
+    <?php
+    if (isset($_GET['success'])) {
+        if ($_GET['success'] == 'deleted') {
+            echo '<div class="alert alert-success" style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #c3e6cb;">';
+            echo '<i class="fas fa-check-circle"></i> ';
+            echo $lang == 'ar' ? 'تم حذف العنصر بنجاح!' : 'Élément supprimé avec succès!';
+            echo '</div>';
+        }
+    }
+    
+    if (isset($_GET['error'])) {
+        if ($_GET['error'] == 'delete_failed') {
+            echo '<div class="alert alert-error" style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #f5c6cb;">';
+            echo '<i class="fas fa-exclamation-triangle"></i> ';
+            echo $lang == 'ar' ? 'خطأ في حذف العنصر' : 'Erreur lors de la suppression';
+            echo '</div>';
+        } elseif ($_GET['error'] == 'no_id') {
+            echo '<div class="alert alert-error" style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; border: 1px solid #f5c6cb;">';
+            echo '<i class="fas fa-exclamation-triangle"></i> ';
+            echo $lang == 'ar' ? 'لم يتم تحديد العنصر المراد حذفه' : 'Aucun élément spécifié pour la suppression';
+            echo '</div>';
+        }
+    }
+    ?>
+
     <!-- رأس الصفحة -->
     <div class="page-header">
         <div class="page-title">
@@ -343,12 +391,60 @@ tr:hover {
                 <?php endif; ?>
             <?php endif; ?>
             
-            <a href="../../public/dashboard.php" class="action-btn btn-secondary">
+            <a href="../../public/dashboard.php?lang=<?=$lang?>" class="action-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 <?= $lang == 'ar' ? 'العودة للوحة التحكم' : 'Retour au tableau de bord' ?>
             </a>
         </div>
     </div>
+
+    <!-- فلاتر البحث -->
+    <?php if (!empty($categories)): ?>
+    <div class="filter-section" style="background: var(--bg-secondary); padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 2rem; border: 1px solid var(--border-color);">
+        <form method="get" action="" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <input type="hidden" name="module" value="items">
+            <input type="hidden" name="action" value="list">
+            <input type="hidden" name="lang" value="<?= $lang ?>">
+            <input type="hidden" name="type" value="<?= $type ?>">
+            
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <label for="category" style="font-weight: 500; color: var(--text-primary); white-space: nowrap;">
+                    <i class="fas fa-filter"></i>
+                    <?= $lang == 'ar' ? 'اختر التصنيف:' : 'Choisir la catégorie:' ?>
+                </label>
+                <select name="category" id="category" style="padding: 0.5rem 1rem; border: 2px solid var(--border-color); border-radius: var(--radius-lg); background: var(--bg-primary); color: var(--text-primary); min-width: 200px;">
+                    <option value=""><?= $lang == 'ar' ? 'جميع التصنيفات' : 'Toutes les catégories' ?></option>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?= htmlspecialchars($category) ?>" <?= $category_filter === $category ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($category) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            
+            <button type="submit" style="padding: 0.5rem 1.5rem; background: var(--primary-color); color: white; border: none; border-radius: var(--radius-lg); font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-search"></i>
+                <?= $lang == 'ar' ? 'تصفية' : 'Filtrer' ?>
+            </button>
+            
+            <?php if (!empty($category_filter)): ?>
+                <a href="?module=items&action=list&lang=<?= $lang ?>&type=<?= $type ?>" style="padding: 0.5rem 1.5rem; background: var(--bg-tertiary); color: var(--text-primary); border: 2px solid var(--border-color); border-radius: var(--radius-lg); text-decoration: none; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-times"></i>
+                    <?= $lang == 'ar' ? 'إلغاء الفلتر' : 'Annuler le filtre' ?>
+                </a>
+            <?php endif; ?>
+        </form>
+        
+        <?php if (!empty($category_filter)): ?>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgb(37 99 235 / 0.1); border: 1px solid rgb(37 99 235 / 0.2); border-radius: var(--radius-lg); color: var(--primary-color); font-size: 0.875rem;">
+                <i class="fas fa-info-circle"></i>
+                <?= $lang == 'ar' ? 'تم تصفية النتائج حسب التصنيف: ' : 'Résultats filtrés par catégorie: ' ?>
+                <strong><?= htmlspecialchars($category_filter) ?></strong>
+                (<?= count($rows) ?> <?= $lang == 'ar' ? 'عنصر' : 'élément(s)' ?>)
+            </div>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 
     <!-- بطاقة البيانات -->
     <div class="data-card">
@@ -419,8 +515,8 @@ tr:hover {
                                     <td><?= htmlspecialchars($row['publisher'] ?? '-') ?></td>
                                     <td>
                                         <?php
-                                        $available = $row['copies_in'];
-                                        $total = $row['copies_total'];
+                                        $available = $row['available_copies'] ?? 0;
+                                        $total = $row['copies'] ?? 0;
                                         
                                         if ($available == 0) {
                                             echo '<span class="status-badge status-unavailable">';
@@ -447,8 +543,8 @@ tr:hover {
                                     <td><?= htmlspecialchars($row['frequency'] ?? '-') ?></td>
                                     <td>
                                         <?php
-                                        $available = $row['copies_in'];
-                                        $total = $row['copies_total'];
+                                        $available = $row['available_copies'] ?? 0;
+                                        $total = $row['copies'] ?? 0;
                                         
                                         if ($available == 0) {
                                             echo '<span class="status-badge status-unavailable">';
@@ -483,8 +579,8 @@ tr:hover {
                                     <td><?= htmlspecialchars($row['frequency'] ?? '-') ?></td>
                                     <td>
                                         <?php
-                                        $available = $row['copies_in'];
-                                        $total = $row['copies_total'];
+                                        $available = $row['available_copies'] ?? 0;
+                                        $total = $row['copies'] ?? 0;
                                         
                                         if ($available == 0) {
                                             echo '<span class="status-badge status-unavailable">';
@@ -510,8 +606,8 @@ tr:hover {
                                     <td><?= htmlspecialchars($row['publisher'] ?? '-') ?></td>
                                     <td>
                                         <?php
-                                        $available = $row['copies_in'];
-                                        $total = $row['copies_total'];
+                                        $available = $row['available_copies'] ?? 0;
+                                        $total = $row['copies'] ?? 0;
                                         
                                         if ($available == 0) {
                                             echo '<span class="status-badge status-unavailable">';

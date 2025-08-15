@@ -32,8 +32,8 @@ Options -Indexes
     RewriteRule ^modules/([^/]+)/([^/]+)\.php$ public/router.php?module=$1&action=$2 [L,QSA]
     
     # Rediriger les erreurs vers la page d'erreur personnalisée
-    ErrorDocument 403 /library_system/public/error.php?code=403
-    ErrorDocument 404 /library_system/public/error.php?code=404
+    ErrorDocument 403 /public/error.php?code=403
+    ErrorDocument 404 /public/error.php?code=404
 </IfModule>
 
 # Bloquer l'accès aux fichiers sensibles spécifiques

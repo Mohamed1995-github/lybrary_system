@@ -326,7 +326,7 @@ $lang = $_GET['lang'] ?? 'ar';
         </div>
         
         <div class="page-actions">
-            <a href="../../public/dashboard.php" class="action-btn btn-secondary">
+            <a href=" http://localhost/library_system/public/dashboard.php" class="action-btn btn-secondary">
                 <i class="fas fa-arrow-left"></i>
                 <?= $lang == 'ar' ? 'العودة' : 'Retour' ?>
             </a>

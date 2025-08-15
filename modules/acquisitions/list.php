@@ -391,10 +391,10 @@ tr:hover {
                                     <?= date('d/m/Y', strtotime($acquisition['acquired_date'])) ?>
                                 </td>
                                 <td class="table-actions">
-                                    <a href="../../public/router.php?module=acquisitions&action=edit&lang=<?=$lang?>&id=<?=$acquisition["id']?>" class="action-icon action-edit" title="<?= $lang == 'ar' ? 'تعديل' : 'Modifier' ?>">
+                                    <a href="../../public/router.php?module=acquisitions&action=edit&lang=<?=$lang?>&id=<?=$acquisition['id']?>" class="action-icon action-edit" title="<?= $lang == 'ar' ? 'تعديل' : 'Modifier' ?>">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="../../public/router.php?module=acquisitions&action=delete&lang=<?=$lang?>&id=<?=$acquisition["id']?>" class="action-icon action-delete" title="<?= $lang == 'ar' ? 'حذف' : 'Supprimer' ?>" onclick="return confirm('<?= $lang == 'ar' ? 'هل أنت متأكد من حذف هذا الاستحواذ؟' : 'Êtes-vous sûr de vouloir supprimer cette acquisition ?' ?>')">
+                                    <a href="../../public/router.php?module=acquisitions&action=delete&lang=<?=$lang?>&id=<?=$acquisition['id']?>" class="action-icon action-delete" title="<?= $lang == 'ar' ? 'حذف' : 'Supprimer' ?>" onclick="return confirm('<?= $lang == 'ar' ? 'هل أنت متأكد من حذف هذا الاستحواذ؟' : 'Êtes-vous sûr de vouloir supprimer cette acquisition ?' ?>')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </td>

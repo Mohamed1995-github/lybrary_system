@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $publisher = trim($_POST['publisher'] ?? '');
     $year_pub = $_POST['year_pub'] ?? null;
     $classification = trim($_POST['classification'] ?? '');
-    $copies_total = (int)$_POST['copies_total'];
+    $copies = (int)$_POST['copies'];
     
     // Champs spécifiques selon le type
     $edition = trim($_POST['edition'] ?? '');
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = $lang == 'ar' ? 'العنوان مطلوب' : 'Le titre est requis';
     }
     
-    if ($copies_total < 1) {
+    if ($copies < 1) {
         $errors[] = $lang == 'ar' ? 'عدد النسخ يجب أن يكون 1 على الأقل' : 'Le nombre de copies doit être au moins 1';
     }
     
@@ -70,17 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             // Construire la requête selon le type
             if ($type == 'book') {
-                $stmt = $pdo->prepare("UPDATE items SET title=?, author=?, publisher=?, year_pub=?, classification=?, copies_total=?, copies_in=?, edition=?, book_type=? WHERE id=?");
-                $stmt->execute([$title, $author, $publisher, $year_pub, $classification, $copies_total, $copies_total, $edition, $book_type, $id]);
+                $stmt = $pdo->prepare("UPDATE items SET title=?, author=?, publisher=?, year_pub=?, classification=?, copies=?, available_copies=?, edition=?, book_type=? WHERE id=?");
+                $stmt->execute([$title, $author, $publisher, $year_pub, $classification, $copies, $copies, $edition, $book_type, $id]);
             } elseif ($type == 'magazine') {
-                $stmt = $pdo->prepare("UPDATE items SET title=?, author=?, publisher=?, year_pub=?, classification=?, copies_total=?, copies_in=?, magazine_name=?, volume_number=? WHERE id=?");
-                $stmt->execute([$title, $author, $publisher, $year_pub, $classification, $copies_total, $copies_total, $magazine_name, $volume_number, $id]);
+                $stmt = $pdo->prepare("UPDATE items SET title=?, author=?, publisher=?, year_pub=?, classification=?, copies=?, available_copies=?, magazine_name=?, volume_number=? WHERE id=?");
+                $stmt->execute([$title, $author, $publisher, $year_pub, $classification, $copies, $copies, $magazine_name, $volume_number, $id]);
             } elseif ($type == 'newspaper') {
-                $stmt = $pdo->prepare("UPDATE items SET title=?, publisher=?, year_pub=?, classification=?, copies_total=?, copies_in=?, newspaper_number=? WHERE id=?");
-                $stmt->execute([$title, $publisher, $year_pub, $classification, $copies_total, $copies_total, $newspaper_number, $id]);
+                $stmt = $pdo->prepare("UPDATE items SET title=?, publisher=?, year_pub=?, classification=?, copies=?, available_copies=?, newspaper_number=? WHERE id=?");
+                $stmt->execute([$title, $publisher, $year_pub, $classification, $copies, $copies, $newspaper_number, $id]);
             } else {
-                $stmt = $pdo->prepare("UPDATE items SET title=?, author=?, publisher=?, year_pub=?, classification=?, copies_total=?, copies_in=? WHERE id=?");
-                $stmt->execute([$title, $author, $publisher, $year_pub, $classification, $copies_total, $copies_total, $id]);
+                $stmt = $pdo->prepare("UPDATE items SET title=?, author=?, publisher=?, year_pub=?, classification=?, copies=?, available_copies=? WHERE id=?");
+                $stmt->execute([$title, $author, $publisher, $year_pub, $classification, $copies, $copies, $id]);
             }
             
             $success = $lang == 'ar' ? 'تم التحديث بنجاح!' : 'Mise à jour réussie!';
@@ -640,13 +640,13 @@ $type_info = [
                 </div>
 
                 <div class="form-group">
-                    <label for="copies_total" class="form-label">
+                    <label for="copies" class="form-label">
                         <i class="fas fa-copy"></i>
                         <?= $lang == 'ar' ? 'عدد النسخ' : 'Nombre de copies' ?>
                         <span class="required-field">*</span>
                     </label>
-                    <input type="number" id="copies_total" name="copies_total" class="form-input" 
-                           value="<?= htmlspecialchars($item['copies_total']) ?>" 
+                    <input type="number" id="copies" name="copies" class="form-input" 
+                           value="<?= htmlspecialchars($item['copies']) ?>" 
                            min="1" max="1000" 
                            placeholder="<?= $lang == 'ar' ? 'أدخل عدد النسخ' : 'Entrez le nombre de copies' ?>" 
                            required>

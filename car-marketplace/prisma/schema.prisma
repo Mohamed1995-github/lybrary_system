@@ -1,0 +1,140 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum ListingStatus {
+  ACTIVE
+  PENDING
+  SOLD
+  RESERVED
+  ARCHIVED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+model Agency {
+  id          Int       @id @default(autoincrement())
+  name        String
+  email       String
+  phone       String?
+  address     String?
+  city        String?
+  country     String?
+  description String?
+  logoUrl     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  cars        Car[]
+
+  @@index([city])
+}
+
+model Car {
+  id            Int       @id @default(autoincrement())
+  agencyId      Int
+  agency        Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  make          String
+  model         String
+  year          Int
+  mileageKm     Int
+  transmission  String
+  fuelType      String
+  seats         Int?
+  doors         Int?
+  color         String?
+  features      Json?
+  images        Json?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  listings      Listing[]
+
+  @@index([make])
+  @@index([model])
+}
+
+model Listing {
+  id               Int            @id @default(autoincrement())
+  carId            Int
+  car              Car            @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  type             ListingType
+  status           ListingStatus  @default(ACTIVE)
+
+  priceCents       Int?           // For SALE type
+  dailyRateCents   Int?           // For RENT type
+
+  availableFrom    DateTime?
+  availableTo      DateTime?
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  leads            Lead[]
+  reservations     Reservation[]
+
+  @@index([type])
+  @@index([status])
+}
+
+model Lead {
+  id         Int         @id @default(autoincrement())
+  listingId  Int
+  listing    Listing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  name       String
+  email      String
+  phone      String?
+  message    String?
+  status     LeadStatus  @default(NEW)
+
+  createdAt  DateTime    @default(now())
+
+  @@index([listingId])
+}
+
+model Reservation {
+  id                Int                @id @default(autoincrement())
+  listingId         Int
+  listing           Listing            @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  customerName      String
+  customerEmail     String
+  customerPhone     String?
+
+  startDate         DateTime
+  endDate           DateTime
+  status            ReservationStatus  @default(PENDING)
+  totalPriceCents   Int
+
+  createdAt         DateTime           @default(now())
+
+  @@index([listingId])
+  @@index([startDate])
+}

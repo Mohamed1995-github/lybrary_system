@@ -26,9 +26,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $employee = $stmt->fetch();
             
             if ($employee) {
-                // في هذا المثال، نستخدم كلمة مرور بسيطة (يمكن تطويرها لاحقاً)
-                // يمكن استخدام password_hash() و password_verify() للتحقق الآمن
-                if ($password === '123456' || password_verify($password, $employee['password'] ?? '')) {
+                // Vérification du mot de passe avec password_verify
+                $passwordValid = false;
+                
+                // Si un mot de passe hashé existe, on utilise password_verify
+                if (!empty($employee['password'])) {
+                    $passwordValid = password_verify($password, $employee['password']);
+                } 
+                // Sinon, on accepte '123456' comme mot de passe par défaut temporaire
+                else if ($password === '123456') {
+                    $passwordValid = true;
+                    // Optionnel: hasher et sauvegarder le mot de passe pour la prochaine fois
+                    $hashedPassword = password_hash('123456', PASSWORD_DEFAULT);
+                    $updateStmt = $pdo->prepare('UPDATE employees SET password = ? WHERE id = ?');
+                    $updateStmt->execute([$hashedPassword, $employee['id']]);
+                }
+                
+                if ($passwordValid) {
                     $_SESSION['uid'] = $employee['id'];
                     $_SESSION['employee_name'] = $employee['name'];
                     $_SESSION['employee_function'] = $employee['function'];

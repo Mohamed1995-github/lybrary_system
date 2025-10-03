@@ -95,115 +95,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../../public/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .form-container {
-            max-width: 600px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s ease;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-        
-        .form-select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            background: white;
-        }
-        
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-        
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-        
-        .btn-primary:hover {
-            background: var(--primary-hover);
-        }
-        
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 2px solid var(--border-color);
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            text-decoration: none;
-            display: inline-block;
-            margin-right: 1rem;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-    </style>
+    <link rel="stylesheet" href="../../public/assets/css/administration.css">
+    <link rel="stylesheet" href="../../public/assets/css/forms.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="header-left">
-                    <a href="../../public/router.php?module=administration&action=list&lang=<?=$lang?>" class="back-btn">
-                        <i class="fas fa-arrow-left"></i>
-                        <?= $lang == 'ar' ? 'العودة للقائمة' : 'Retour à la liste' ?>
-                    </a>
-                </div>
-                <div>
-                    <h1><?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?></h1>
-                    <p style="color: var(--text-secondary); margin: 0; font-size: 0.875rem;">
-                        <?= $lang == 'ar' ? 'إضافة موظف جديد إلى النظام' : 'Ajouter un nouvel employé au système' ?>
-                    </p>
-                </div>
-            </div>
+    <div class="page-container">
+        <header class="page-header">
+            <a href="../../public/router.php?module=administration&action=list&lang=<?= $lang ?>" class="action-btn btn-secondary" style="font-size: 0.875rem;">
+                <i class="fas fa-arrow-left"></i> <?= $lang == 'ar' ? 'العودة للقائمة' : 'Retour à la liste' ?>
+            </a>
         </header>
 
-        <!-- Content -->
-        <main class="main-content">
-            <div class="form-container">
+        <main>
+            <div class="form-card">
+                <div class="form-header">
+                    <div class="page-title">
+                        <i class="fas fa-user-plus page-icon"></i>
+                        <?= $lang == 'ar' ? 'إضافة موظف جديد' : 'Ajouter un employé' ?>
+                    </div>
+                    <p class="form-subtitle"><?= $lang == 'ar' ? 'إضافة موظف جديد إلى النظام' : 'Ajouter un nouvel employé au système' ?></p>
+                </div>
+
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-error">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -218,55 +130,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 <?php endif; ?>
 
-                <form method="POST">
+                <form method="POST" class="form-grid">
                     <div class="form-group">
-                        <label class="form-label"><?= $lang == 'ar' ? 'الاسم' : 'Nom' ?></label>
-                        <input type="text" name="name" class="form-input" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>" required>
+                        <label for="name" class="form-label"><?= $lang == 'ar' ? 'الاسم' : 'Nom' ?></label>
+                        <div style="position: relative;">
+                            <input type="text" id="name" name="name" class="form-input" value="<?= htmlspecialchars($_POST['name'] ?? '') ?>" required>
+                            <i class="fas fa-user" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label"><?= $lang == 'ar' ? 'الرقم' : 'Numéro' ?></label>
-                        <input type="text" name="number" class="form-input" value="<?= htmlspecialchars($_POST['number'] ?? '') ?>" required>
+                        <label for="number" class="form-label"><?= $lang == 'ar' ? 'الرقم' : 'Numéro' ?></label>
+                        <div style="position: relative;">
+                            <input type="text" id="number" name="number" class="form-input" value="<?= htmlspecialchars($_POST['number'] ?? '') ?>" required>
+                            <i class="fas fa-id-badge" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label"><?= $lang == 'ar' ? 'الوظيفة' : 'Fonction' ?></label>
-                        <select name="function" class="form-select" required>
-                            <option value=""><?= $lang == 'ar' ? 'اختر الوظيفة' : 'Choisir la fonction' ?></option>
-                            <option value="مدير" <?= ($_POST['function'] ?? '') === 'مدير' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مدير' : 'Directeur' ?></option>
-                            <option value="أمين مكتبة" <?= ($_POST['function'] ?? '') === 'أمين مكتبة' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'أمين مكتبة' : 'Bibliothécaire' ?></option>
-                            <option value="مساعد" <?= ($_POST['function'] ?? '') === 'مساعد' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مساعد' : 'Assistant' ?></option>
-                            <option value="استقبال" <?= ($_POST['function'] ?? '') === 'استقبال' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'استقبال' : 'Accueil' ?></option>
-                        </select>
+                        <label for="function" class="form-label"><?= $lang == 'ar' ? 'الوظيفة' : 'Fonction' ?></label>
+                        <div style="position: relative;">
+                            <select id="function" name="function" class="form-select" required>
+                                <option value=""><?= $lang == 'ar' ? 'اختر الوظيفة' : 'Choisir la fonction' ?></option>
+                                <option value="مدير" <?= ($_POST['function'] ?? '') === 'مدير' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مدير' : 'Directeur' ?></option>
+                                <option value="أمين مكتبة" <?= ($_POST['function'] ?? '') === 'أمين مكتبة' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'أمين مكتبة' : 'Bibliothécaire' ?></option>
+                                <option value="مساعد" <?= ($_POST['function'] ?? '') === 'مساعد' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مساعد' : 'Assistant' ?></option>
+                                <option value="استقبال" <?= ($_POST['function'] ?? '') === 'استقبال' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'استقبال' : 'Accueil' ?></option>
+                            </select>
+                            <i class="fas fa-briefcase" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light); pointer-events: none;"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label"><?= $lang == 'ar' ? 'حقوق الوصول' : 'Droits d\'accès' ?></label>
-                        <select name="access_rights" class="form-select" required>
-                            <option value=""><?= $lang == 'ar' ? 'اختر الحقوق' : 'Choisir les droits' ?></option>
-                            <option value="admin,items,loans,borrowers,administration" <?= ($_POST['access_rights'] ?? '') === 'admin,items,loans,borrowers,administration' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مدير - جميع الصلاحيات' : 'Admin - Tous les droits' ?></option>
-                            <option value="items,loans,borrowers" <?= ($_POST['access_rights'] ?? '') === 'items,loans,borrowers' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'أمين مكتبة - إدارة المواد والقروض' : 'Bibliothécaire - Gestion des items et prêts' ?></option>
-                            <option value="items,loans" <?= ($_POST['access_rights'] ?? '') === 'items,loans' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مساعد - إدارة المواد والقروض' : 'Assistant - Gestion des items et prêts' ?></option>
-                            <option value="borrowers" <?= ($_POST['access_rights'] ?? '') === 'borrowers' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'استقبال - إدارة المستعيرين' : 'Accueil - Gestion des emprunteurs' ?></option>
-                        </select>
+                        <label for="access_rights" class="form-label"><?= $lang == 'ar' ? 'حقوق الوصول' : 'Droits d\'accès' ?></label>
+                        <div style="position: relative;">
+                            <select id="access_rights" name="access_rights" class="form-select" required>
+                                <option value=""><?= $lang == 'ar' ? 'اختر الحقوق' : 'Choisir les droits' ?></option>
+                                <option value="admin,items,loans,borrowers,administration" <?= ($_POST['access_rights'] ?? '') === 'admin,items,loans,borrowers,administration' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مدير - جميع الصلاحيات' : 'Admin - Tous les droits' ?></option>
+                                <option value="items,loans,borrowers" <?= ($_POST['access_rights'] ?? '') === 'items,loans,borrowers' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'أمين مكتبة - إدارة المواد والقروض' : 'Bibliothécaire - Gestion des items et prêts' ?></option>
+                                <option value="items,loans" <?= ($_POST['access_rights'] ?? '') === 'items,loans' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'مساعد - إدارة المواد والقروض' : 'Assistant - Gestion des items et prêts' ?></option>
+                                <option value="borrowers" <?= ($_POST['access_rights'] ?? '') === 'borrowers' ? 'selected' : '' ?>><?= $lang == 'ar' ? 'استقبال - إدارة المستعيرين' : 'Accueil - Gestion des emprunteurs' ?></option>
+                            </select>
+                            <i class="fas fa-key" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light); pointer-events: none;"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label"><?= $lang == 'ar' ? 'كلمة المرور' : 'Mot de passe' ?></label>
-                        <input type="password" name="password" class="form-input" required>
+                        <label for="password" class="form-label"><?= $lang == 'ar' ? 'كلمة المرور' : 'Mot de passe' ?></label>
+                        <div style="position: relative;">
+                            <input type="password" id="password" name="password" class="form-input" required>
+                            <i class="fas fa-lock" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label"><?= $lang == 'ar' ? 'تأكيد كلمة المرور' : 'Confirmer le mot de passe' ?></label>
-                        <input type="password" name="confirm_password" class="form-input" required>
+                        <label for="confirm_password" class="form-label"><?= $lang == 'ar' ? 'تأكيد كلمة المرور' : 'Confirmer le mot de passe' ?></label>
+                        <div style="position: relative;">
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-input" required>
+                            <i class="fas fa-lock" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--text-light);"></i>
+                        </div>
                     </div>
 
-                    <div class="form-actions">
+                    <div class="form-group full-width form-actions">
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-save"></i>
                             <?= $lang == 'ar' ? 'حفظ الموظف' : 'Enregistrer l\'employé' ?>
                         </button>
-                        <a href="../../public/router.php?module=administration&action=list&lang=<?=$lang?>" class="btn-secondary">
+                        <a href="../../public/router.php?module=administration&action=list&lang=<?= $lang ?>" class="btn-secondary">
                             <i class="fas fa-times"></i>
                             <?= $lang == 'ar' ? 'إلغاء' : 'Annuler' ?>
                         </a>
@@ -278,4 +208,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="../../public/assets/js/script.js"></script>
 </body>
-</html> 
+</html>

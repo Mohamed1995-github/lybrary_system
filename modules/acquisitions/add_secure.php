@@ -140,6 +140,7 @@ $csrf_token = $security->generateCSRFToken();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?=$lang=='ar'?'إضافة استحواذ جديد':'Ajouter une nouvelle acquisition'?> - Système de Bibliothèque</title>
     <link rel="stylesheet" href="../../public/assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/forms.css">
 </head>
 <body>
     <div class="container">

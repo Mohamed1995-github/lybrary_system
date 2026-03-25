@@ -1,0 +1,1 @@
+DESCRIBE library_system.items;

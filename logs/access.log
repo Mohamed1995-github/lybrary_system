@@ -417,3 +417,18 @@
 2025-10-02 14:25:32 - User: 1 - FULL_ACCESS - Module: administration - Action: add - IP: ::1
 2025-10-02 14:25:48 - User: 1 - FULL_ACCESS - Module: administration - Action: add - IP: ::1
 2025-10-02 14:58:26 - User: 1 - FULL_ACCESS - Module: administration - Action: add - IP: ::1
+2025-10-04 12:34:47 - User: 5 - FULL_ACCESS - Module: administration - Action: add - IP: ::1
+2025-10-04 12:59:36 - User: 5 - FULL_ACCESS - Module: administration - Action: add - IP: ::1
+2025-10-04 13:02:41 - User: 5 - FULL_ACCESS - Module: administration - Action: add - IP: ::1
+[2025-10-04 13:12:29] [INFO] [User: anonymous] [IP: ::1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36] Accès à la page d'accueil {"lang":"ar","ip":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/141.0.0.0 Safari\/537.36"}
+[2025-10-04 13:12:30] [INFO] [User: anonymous] [IP: ::1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36] Accès à la page d'accueil {"lang":"ar","ip":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/141.0.0.0 Safari\/537.36"}
+[2025-10-04 13:20:23] [INFO] [User: anonymous] [IP: ::1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36] Accès à la page d'accueil {"lang":"ar","ip":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/141.0.0.0 Safari\/537.36"}
+[2025-10-04 13:23:53] [INFO] [User: anonymous] [IP: ::1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36] Accès à la page d'accueil {"lang":"ar","ip":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/141.0.0.0 Safari\/537.36"}
+[2025-10-04 13:29:35] [INFO] [User: anonymous] [IP: ::1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36] Accès à la page d'accueil {"lang":"ar","ip":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/141.0.0.0 Safari\/537.36"}
+[2025-10-04 18:41:37] [INFO] [User: anonymous] [IP: ::1] [UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36] Accès à la page d'accueil {"lang":"ar","ip":"::1","user_agent":"Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/141.0.0.0 Safari\/537.36"}
+[2025-12-13 01:26:20] [INFO] [User: anonymous] [IP: unknown] [UA: unknown] Database connection established successfully 
+[2025-12-13 01:26:58] [INFO] [User: anonymous] [IP: unknown] [UA: unknown] Database connection established successfully 
+[2025-12-13 02:03:54] [INFO] [User: anonymous] [IP: unknown] [UA: unknown] Database connection established successfully 
+[2025-12-13 03:30:57] [INFO] [User: anonymous] [IP: unknown] [UA: unknown] Database connection established successfully 
+[2025-12-13 03:33:19] [INFO] [User: anonymous] [IP: unknown] [UA: unknown] Database connection established successfully 
+[2025-12-13 03:33:23] [INFO] [User: anonymous] [IP: unknown] [UA: unknown] Database connection established successfully 

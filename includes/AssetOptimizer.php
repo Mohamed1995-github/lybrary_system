@@ -1,259 +1,341 @@
 <?php
 /**
- * Asset Optimizer Class
- * Handles compression, caching, and optimization of CSS/JS assets
+ * Optimiseur d'assets pour améliorer les performances
+ * Compression, lazy loading, et optimisation des images
  */
+
 class AssetOptimizer {
-    private static $instance = null;
-    private $cacheDir;
-    private $assetsDir;
-    private $version;
+    private $cache_manager;
+    private $logger;
+    private $upload_dir;
+    private $optimized_dir;
+    private $max_image_size = 1920; // Largeur maximale
+    private $quality = 85; // Qualité JPEG
     
-    private function __construct() {
-        $this->assetsDir = __DIR__ . '/../public/assets';
-        $this->cacheDir = __DIR__ . '/../cache/assets';
-        $this->version = $this->getAssetVersion();
+    public function __construct() {
+        $this->cache_manager = CacheManager::getInstance();
+        $this->logger = new Logger();
+        $this->upload_dir = __DIR__ . '/../uploads';
+        $this->optimized_dir = __DIR__ . '/../temp/optimized';
         
-        // Create cache directory if it doesn't exist
-        if (!is_dir($this->cacheDir)) {
-            mkdir($this->cacheDir, 0755, true);
+        // Créer le dossier d'optimisation
+        if (!is_dir($this->optimized_dir)) {
+            mkdir($this->optimized_dir, 0755, true);
         }
     }
     
-    public static function getInstance() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-    
     /**
-     * Get optimized CSS with cache busting
+     * Optimiser une image
      */
-    public function getOptimizedCSS($files = []) {
-        if (empty($files)) {
-            $files = ['css/style.min.css'];
-        }
-        
-        $cacheKey = 'css_' . md5(implode('|', $files) . $this->version);
-        $cacheFile = $this->cacheDir . '/' . $cacheKey . '.css';
-        
-        // Check if cached version exists and is fresh
-        if (file_exists($cacheFile) && $this->isCacheFresh($cacheFile, $files)) {
-            return $this->generateAssetUrl($cacheKey . '.css');
-        }
-        
-        // Combine and optimize CSS files
-        $combinedCSS = $this->combineCSS($files);
-        $optimizedCSS = $this->optimizeCSS($combinedCSS);
-        
-        // Save to cache
-        file_put_contents($cacheFile, $optimizedCSS);
-        
-        return $this->generateAssetUrl($cacheKey . '.css');
-    }
-    
-    /**
-     * Get optimized JavaScript with cache busting
-     */
-    public function getOptimizedJS($files = []) {
-        if (empty($files)) {
-            $files = ['js/script.min.js'];
-        }
-        
-        $cacheKey = 'js_' . md5(implode('|', $files) . $this->version);
-        $cacheFile = $this->cacheDir . '/' . $cacheKey . '.js';
-        
-        // Check if cached version exists and is fresh
-        if (file_exists($cacheFile) && $this->isCacheFresh($cacheFile, $files)) {
-            return $this->generateAssetUrl($cacheKey . '.js');
-        }
-        
-        // Combine and optimize JS files
-        $combinedJS = $this->combineJS($files);
-        
-        // Save to cache
-        file_put_contents($cacheFile, $combinedJS);
-        
-        return $this->generateAssetUrl($cacheKey . '.js');
-    }
-    
-    /**
-     * Generate critical CSS for above-the-fold content
-     */
-    public function getCriticalCSS() {
-        $criticalCSS = '
-        :root{--primary-color:#2563eb;--primary-hover:#1d4ed8;--bg-primary:#fff;--text-primary:#1f2937;--shadow-lg:0 10px 15px -3px rgb(0 0 0/.1)}
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--text-primary);line-height:1.6;direction:rtl;min-height:100vh}
-        .container{max-width:1200px;margin:0 auto;padding:2rem}
-        .card{background:var(--bg-primary);border-radius:.75rem;box-shadow:var(--shadow-lg);padding:2rem;margin-bottom:2rem}
-        .btn{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1.5rem;border:none;border-radius:.5rem;font-weight:500;text-decoration:none;cursor:pointer;transition:all .2s ease}
-        .btn-primary{background:var(--primary-color);color:#fff}
-        ';
-        
-        return $criticalCSS;
-    }
-    
-    /**
-     * Combine multiple CSS files
-     */
-    private function combineCSS($files) {
-        $combined = '';
-        
-        foreach ($files as $file) {
-            $filePath = $this->assetsDir . '/' . $file;
-            if (file_exists($filePath)) {
-                $content = file_get_contents($filePath);
-                $combined .= $content . "\n";
-            }
-        }
-        
-        return $combined;
-    }
-    
-    /**
-     * Combine multiple JS files
-     */
-    private function combineJS($files) {
-        $combined = '';
-        
-        foreach ($files as $file) {
-            $filePath = $this->assetsDir . '/' . $file;
-            if (file_exists($filePath)) {
-                $content = file_get_contents($filePath);
-                $combined .= $content . "\n";
-            }
-        }
-        
-        return $combined;
-    }
-    
-    /**
-     * Optimize CSS content
-     */
-    private function optimizeCSS($css) {
-        // Remove comments
-        $css = preg_replace('/\/\*.*?\*\//s', '', $css);
-        
-        // Remove unnecessary whitespace
-        $css = preg_replace('/\s+/', ' ', $css);
-        
-        // Remove trailing semicolons before closing braces
-        $css = str_replace(';}', '}', $css);
-        
-        // Remove spaces around specific characters
-        $css = str_replace([' {', '{ ', ' }', '} ', '; ', ' ;', ': ', ' :', ', ', ' ,'], 
-                          ['{', '{', '}', '}', ';', ';', ':', ':', ',', ','], $css);
-        
-        return trim($css);
-    }
-    
-    /**
-     * Check if cache file is fresh
-     */
-    private function isCacheFresh($cacheFile, $sourceFiles) {
-        $cacheTime = filemtime($cacheFile);
-        
-        foreach ($sourceFiles as $file) {
-            $filePath = $this->assetsDir . '/' . $file;
-            if (file_exists($filePath) && filemtime($filePath) > $cacheTime) {
-                return false;
-            }
-        }
-        
-        return true;
-    }
-    
-    /**
-     * Generate asset URL with cache busting
-     */
-    private function generateAssetUrl($filename) {
-        return '/cache/assets/' . $filename . '?v=' . $this->version;
-    }
-    
-    /**
-     * Get asset version for cache busting
-     */
-    private function getAssetVersion() {
-        // Use file modification time or git commit hash
-        $versionFile = __DIR__ . '/../version.txt';
-        
-        if (file_exists($versionFile)) {
-            return trim(file_get_contents($versionFile));
-        }
-        
-        // Fallback to current timestamp
-        return date('YmdHis');
-    }
-    
-    /**
-     * Serve cached asset with proper headers
-     */
-    public function serveAsset($filename) {
-        $filePath = $this->cacheDir . '/' . $filename;
-        
-        if (!file_exists($filePath)) {
-            http_response_code(404);
+    public function optimizeImage($source_path, $options = []) {
+        if (!file_exists($source_path)) {
             return false;
         }
         
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        $mimeTypes = [
-            'css' => 'text/css',
-            'js' => 'application/javascript'
-        ];
+        $cache_key = 'img_' . md5($source_path . serialize($options));
+        $cached_path = $this->cache_manager->get($cache_key);
         
-        if (isset($mimeTypes[$extension])) {
-            header('Content-Type: ' . $mimeTypes[$extension]);
+        if ($cached_path && file_exists($cached_path)) {
+            return $cached_path;
         }
         
-        // Set aggressive caching headers
-        header('Cache-Control: public, max-age=31536000, immutable'); // 1 year
-        header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
-        header('ETag: "' . md5_file($filePath) . '"');
-        
-        // Enable gzip compression
-        if (function_exists('gzencode') && strpos($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') !== false) {
-            header('Content-Encoding: gzip');
-            echo gzencode(file_get_contents($filePath));
-        } else {
-            readfile($filePath);
+        $info = getimagesize($source_path);
+        if (!$info) {
+            return false;
         }
         
-        return true;
+        $width = $options['width'] ?? $this->max_image_size;
+        $height = $options['height'] ?? null;
+        $quality = $options['quality'] ?? $this->quality;
+        
+        // Calculer les nouvelles dimensions
+        $new_dimensions = $this->calculateDimensions($info[0], $info[1], $width, $height);
+        
+        // Créer l'image optimisée
+        $optimized_path = $this->createOptimizedImage($source_path, $new_dimensions, $quality);
+        
+        if ($optimized_path) {
+            $this->cache_manager->set($cache_key, $optimized_path, 86400); // Cache 24h
+            $this->logger->logInfo("Image optimized", [
+                'source' => $source_path,
+                'optimized' => $optimized_path,
+                'size_reduction' => $this->calculateSizeReduction($source_path, $optimized_path)
+            ]);
+        }
+        
+        return $optimized_path;
     }
     
     /**
-     * Preload critical resources
+     * Générer des images responsive
      */
-    public function getPreloadHeaders() {
-        $headers = [];
+    public function generateResponsiveImages($source_path, $sizes = [320, 640, 1024, 1920]) {
+        $responsive_images = [];
         
-        // Preload critical CSS
-        $headers[] = '<' . $this->getOptimizedCSS() . '>; rel=preload; as=style';
-        
-        // Preload critical JS
-        $headers[] = '<' . $this->getOptimizedJS() . '>; rel=preload; as=script';
-        
-        // Preload fonts
-        $headers[] = '<https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap>; rel=preload; as=style';
-        
-        return $headers;
-    }
-    
-    /**
-     * Clean old cache files
-     */
-    public function cleanCache($maxAge = 86400) { // 24 hours
-        $files = glob($this->cacheDir . '/*');
-        $cutoff = time() - $maxAge;
-        
-        foreach ($files as $file) {
-            if (filemtime($file) < $cutoff) {
-                unlink($file);
+        foreach ($sizes as $size) {
+            $optimized = $this->optimizeImage($source_path, [
+                'width' => $size,
+                'quality' => $this->quality
+            ]);
+            
+            if ($optimized) {
+                $responsive_images[$size] = $optimized;
             }
         }
+        
+        return $responsive_images;
+    }
+    
+    /**
+     * Créer un placeholder pour lazy loading
+     */
+    public function createPlaceholder($width, $height, $color = '#f3f4f6') {
+        $cache_key = "placeholder_{$width}x{$height}_{$color}";
+        $cached_path = $this->cache_manager->get($cache_key);
+        
+        if ($cached_path && file_exists($cached_path)) {
+            return $cached_path;
+        }
+        
+        $placeholder_path = $this->optimized_dir . "/placeholder_{$width}x{$height}.jpg";
+        
+        // Créer une image placeholder simple
+        $image = imagecreate($width, $height);
+        $bg_color = $this->hexToRgb($color);
+        $background = imagecolorallocate($image, $bg_color['r'], $bg_color['g'], $bg_color['b']);
+        
+        imagejpeg($image, $placeholder_path, 90);
+        imagedestroy($image);
+        
+        $this->cache_manager->set($cache_key, $placeholder_path, 86400);
+        
+        return $placeholder_path;
+    }
+    
+    /**
+     * Générer le HTML pour lazy loading
+     */
+    public function generateLazyImage($src, $alt = '', $class = '', $sizes = []) {
+        $placeholder = $this->createPlaceholder(300, 200);
+        $placeholder_data = base64_encode(file_get_contents($placeholder));
+        
+        $html = '<div class="lazy-image-container" style="position: relative; overflow: hidden;">';
+        $html .= '<img src="data:image/jpeg;base64,' . $placeholder_data . '" ';
+        $html .= 'data-src="' . htmlspecialchars($src) . '" ';
+        $html .= 'alt="' . htmlspecialchars($alt) . '" ';
+        $html .= 'class="lazy-image ' . htmlspecialchars($class) . '" ';
+        $html .= 'loading="lazy" ';
+        
+        if (!empty($sizes)) {
+            $html .= 'data-sizes="' . implode(',', $sizes) . '" ';
+        }
+        
+        $html .= 'style="width: 100%; height: auto; transition: opacity 0.3s ease;">';
+        $html .= '</div>';
+        
+        return $html;
+    }
+    
+    /**
+     * Compresser les fichiers CSS
+     */
+    public function compressCSS($css_content) {
+        // Supprimer les commentaires
+        $css_content = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css_content);
+        
+        // Supprimer les espaces inutiles
+        $css_content = preg_replace('/\s+/', ' ', $css_content);
+        $css_content = str_replace(['; ', ' {', '} ', '{ ', ' }'], [';', '{', '}', '{', '}'], $css_content);
+        
+        return trim($css_content);
+    }
+    
+    /**
+     * Compresser les fichiers JavaScript
+     */
+    public function compressJS($js_content) {
+        // Supprimer les commentaires
+        $js_content = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $js_content);
+        $js_content = preg_replace('!//.*$!m', '', $js_content);
+        
+        // Supprimer les espaces inutiles
+        $js_content = preg_replace('/\s+/', ' ', $js_content);
+        $js_content = preg_replace('/;\s*}/', '}', $js_content);
+        
+        return trim($js_content);
+    }
+    
+    /**
+     * Minifier le HTML
+     */
+    public function minifyHTML($html) {
+        // Supprimer les commentaires HTML
+        $html = preg_replace('/<!--(?!\s*(?:\[if [^\]]+]|<!|>))(?:(?!-->).)*-->/s', '', $html);
+        
+        // Supprimer les espaces inutiles
+        $html = preg_replace('/\s+/', ' ', $html);
+        $html = preg_replace('/>\s+</', '><', $html);
+        
+        return trim($html);
+    }
+    
+    /**
+     * Optimiser les assets en lot
+     */
+    public function batchOptimize($directory, $file_types = ['jpg', 'jpeg', 'png', 'gif']) {
+        $optimized_count = 0;
+        $total_size_before = 0;
+        $total_size_after = 0;
+        
+        $files = glob($directory . '/*.{' . implode(',', $file_types) . '}', GLOB_BRACE);
+        
+        foreach ($files as $file) {
+            $original_size = filesize($file);
+            $total_size_before += $original_size;
+            
+            $optimized = $this->optimizeImage($file);
+            if ($optimized) {
+                $optimized_size = filesize($optimized);
+                $total_size_after += $optimized_size;
+                $optimized_count++;
+                
+                $this->logger->logInfo("File optimized", [
+                    'file' => basename($file),
+                    'original_size' => $original_size,
+                    'optimized_size' => $optimized_size,
+                    'reduction' => round((1 - $optimized_size / $original_size) * 100, 2) . '%'
+                ]);
+            }
+        }
+        
+        return [
+            'files_optimized' => $optimized_count,
+            'total_files' => count($files),
+            'size_before' => $total_size_before,
+            'size_after' => $total_size_after,
+            'total_reduction' => round((1 - $total_size_after / $total_size_before) * 100, 2) . '%'
+        ];
+    }
+    
+    /**
+     * Nettoyer les fichiers optimisés anciens
+     */
+    public function cleanupOldOptimized($max_age_days = 7) {
+        $max_age = $max_age_days * 86400; // Convertir en secondes
+        $cleaned = 0;
+        
+        $files = glob($this->optimized_dir . '/*');
+        foreach ($files as $file) {
+            if (is_file($file) && (time() - filemtime($file)) > $max_age) {
+                unlink($file);
+                $cleaned++;
+            }
+        }
+        
+        $this->logger->logInfo("Cleaned up old optimized files", ['count' => $cleaned]);
+        return $cleaned;
+    }
+    
+    /**
+     * Obtenir les statistiques d'optimisation
+     */
+    public function getOptimizationStats() {
+        $stats = [
+            'total_optimized' => 0,
+            'total_size_saved' => 0,
+            'average_reduction' => 0
+        ];
+        
+        $files = glob($this->optimized_dir . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $stats['total_optimized']++;
+                // Calculer les économies de taille
+                // (Implémentation simplifiée)
+            }
+        }
+        
+        return $stats;
+    }
+    
+    private function calculateDimensions($original_width, $original_height, $max_width, $max_height = null) {
+        if ($max_height === null) {
+            $ratio = $original_height / $original_width;
+            $max_height = $max_width * $ratio;
+        }
+        
+        $width_ratio = $max_width / $original_width;
+        $height_ratio = $max_height / $original_height;
+        $ratio = min($width_ratio, $height_ratio);
+        
+        return [
+            'width' => round($original_width * $ratio),
+            'height' => round($original_height * $ratio)
+        ];
+    }
+    
+    private function createOptimizedImage($source_path, $dimensions, $quality) {
+        $info = getimagesize($source_path);
+        $mime_type = $info['mime'];
+        
+        // Créer l'image source
+        switch ($mime_type) {
+            case 'image/jpeg':
+                $source = imagecreatefromjpeg($source_path);
+                break;
+            case 'image/png':
+                $source = imagecreatefrompng($source_path);
+                break;
+            case 'image/gif':
+                $source = imagecreatefromgif($source_path);
+                break;
+            default:
+                return false;
+        }
+        
+        // Créer l'image de destination
+        $destination = imagecreatetruecolor($dimensions['width'], $dimensions['height']);
+        
+        // Préserver la transparence pour PNG
+        if ($mime_type === 'image/png') {
+            imagealphablending($destination, false);
+            imagesavealpha($destination, true);
+            $transparent = imagecolorallocatealpha($destination, 255, 255, 255, 127);
+            imagefilledrectangle($destination, 0, 0, $dimensions['width'], $dimensions['height'], $transparent);
+        }
+        
+        // Redimensionner
+        imagecopyresampled($destination, $source, 0, 0, 0, 0, 
+                          $dimensions['width'], $dimensions['height'], 
+                          $info[0], $info[1]);
+        
+        // Sauvegarder
+        $filename = 'optimized_' . md5($source_path) . '_' . $dimensions['width'] . 'x' . $dimensions['height'] . '.jpg';
+        $output_path = $this->optimized_dir . '/' . $filename;
+        
+        $success = imagejpeg($destination, $output_path, $quality);
+        
+        // Nettoyer
+        imagedestroy($source);
+        imagedestroy($destination);
+        
+        return $success ? $output_path : false;
+    }
+    
+    private function calculateSizeReduction($original_path, $optimized_path) {
+        $original_size = filesize($original_path);
+        $optimized_size = filesize($optimized_path);
+        
+        return round((1 - $optimized_size / $original_size) * 100, 2);
+    }
+    
+    private function hexToRgb($hex) {
+        $hex = ltrim($hex, '#');
+        return [
+            'r' => hexdec(substr($hex, 0, 2)),
+            'g' => hexdec(substr($hex, 2, 2)),
+            'b' => hexdec(substr($hex, 4, 2))
+        ];
     }
 }
 ?>

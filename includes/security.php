@@ -1,6 +1,6 @@
 <?php
 /**
- * Classe de sécurité pour le système de bibliothèque
+ * Classe de sécurité pour le SEBIL–ENAJM : Système Électronique de la Bibliothèque
  * Gère la protection contre XSS, CSRF, et autres attaques
  */
 

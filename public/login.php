@@ -489,7 +489,7 @@ body::before {
                 <i class="fas fa-book-open login-icon"></i>
             </div>
             <h1 class="login-title">
-                <?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة' : 'SEBIL–ENAJM : Système Électronique de la Bibliothèque' ?>
+                <?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة\SEBIL-ENAJM' : 'SEBIL–ENAJM : Système Électronique de la Bibliothèque' ?>
             </h1>
             <p class="login-subtitle">
                 <?= $lang == 'ar' ? 'المدرسة الوطنية للإدارة و الصحافة و القضاء' : 'École Nationale d\'Administrationet de magistrature' ?>

@@ -10,10 +10,10 @@ function translations(string $lang): array {
     $tr = [
         'ar' => [
             'title' => 'لوحة التحكم',
-            'library_system' => ' النظام الإلكتروني للمكتبة',
+            'library_system' => ' النظام الإلكتروني للمكتبة\SEBIL-ENAJM',
             'hello' => 'مرحباً',
             'logout' => 'تسجيل الخروج',
-            'welcome' => 'مرحباً بك في النظام',
+            'welcome' => 'مرحباً بك فيSEBIL-ENAJM',
             'collections' => 'قسم المجموعات والوثائق',
             'it' => 'قسم المعلوماتية',
             'employees' => 'إدارة الموظفين',
@@ -24,7 +24,8 @@ function translations(string $lang): array {
             'library_system' => 'SEBIL–ENAJM : Système Électronique de la Bibliothèque',
             'hello' => 'Bonjour',
             'logout' => 'Déconnexion',
-            'welcome' => 'Bienvenue dans le système',
+            'welcome' => 'Bienvenue 
+SEBIL–ENAJM',
             'collections' => 'Section Collections et Documents',
             'it' => 'Section Informatique',
             'employees' => 'Gestion des Employés',

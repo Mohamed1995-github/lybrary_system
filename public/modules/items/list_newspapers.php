@@ -9,54 +9,51 @@ if (!isset($_SESSION['uid'])) {
 }
 
 $lang = $_GET['lang'] ?? 'ar';
+$filter_type = $_GET['newspaper_type'] ?? null; // 'popular', 'official', or null for both
 
-// Paramètres de pagination
-$page = max(1, (int)($_GET['page'] ?? 1));
-$limit = 20;
-$offset = ($page - 1) * $limit;
-
-// Récupérer les journaux groupés par type
+// Récupérer les journaux selon le filtre
 try {
-    // Compter le total
-    $count_stmt = $pdo->prepare("SELECT COUNT(*) as total FROM items WHERE type = 'newspaper' AND lang = ?");
-    $count_stmt->execute([$lang]);
-    $total_newspapers = $count_stmt->fetch()['total'];
-    
-    // Récupérer tous les journaux ordonnés par date de création (plus récent en premier)
-    // Groupés par newspaper_type (basé sur la méthode d'ajout)
-    $stmt = $pdo->prepare("
-        SELECT id, title, issue_from, issue_to, newspaper_date, missing_issues, 
-               box_number, cabinet_number, shelf_number, drawer_number, newspaper_type, created_at 
-        FROM items 
-        WHERE type = 'newspaper' AND lang = ? 
-        ORDER BY created_at DESC
-    ");
-    $stmt->execute([$lang]);
-    $all_newspapers = $stmt->fetchAll();
-    
-    // Grouper les journaux par newspaper_type (basé sur la méthode d'ajout)
-    $newspapers_by_type = [
-        'popular' => [],
-        'official' => []
-    ];
-    
-    foreach ($all_newspapers as $newspaper) {
-        $type = $newspaper['newspaper_type'] ?? null;
-        
-        // Grouper selon le champ newspaper_type
-        if ($type === 'popular') {
-            $newspapers_by_type['popular'][] = $newspaper;
-        } elseif ($type === 'official') {
-            $newspapers_by_type['official'][] = $newspaper;
+    if ($filter_type) {
+        $count_stmt = $pdo->prepare("SELECT COUNT(*) as total FROM items WHERE type = 'newspaper' AND lang = ? AND newspaper_type = ?");
+        $count_stmt->execute([$lang, $filter_type]);
+        $total_newspapers = $count_stmt->fetch()['total'];
+
+        $stmt = $pdo->prepare("
+            SELECT id, title, issue_from, issue_to, newspaper_date, missing_issues,
+                   box_number, cabinet_number, shelf_number, drawer_number, newspaper_type,
+                   registration_date, modification_date, created_at
+            FROM items
+            WHERE type = 'newspaper' AND lang = ? AND newspaper_type = ?
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([$lang, $filter_type]);
+        $newspapers = $stmt->fetchAll();
+        $newspapers_by_type = [$filter_type => $newspapers];
+    } else {
+        $count_stmt = $pdo->prepare("SELECT COUNT(*) as total FROM items WHERE type = 'newspaper' AND lang = ?");
+        $count_stmt->execute([$lang]);
+        $total_newspapers = $count_stmt->fetch()['total'];
+
+        $stmt = $pdo->prepare("
+            SELECT id, title, issue_from, issue_to, newspaper_date, missing_issues,
+                   box_number, cabinet_number, shelf_number, drawer_number, newspaper_type,
+                   registration_date, modification_date, created_at
+            FROM items
+            WHERE type = 'newspaper' AND lang = ?
+            ORDER BY created_at DESC
+        ");
+        $stmt->execute([$lang]);
+        $newspapers_by_type = ['popular' => [], 'official' => []];
+        foreach ($stmt->fetchAll() as $row) {
+            $t_key = $row['newspaper_type'] ?? null;
+            if ($t_key === 'popular' || $t_key === 'official') {
+                $newspapers_by_type[$t_key][] = $row;
+            }
         }
     }
-    
-    $total_pages = 1; // Pas de pagination pour l'instant
-    
 } catch (PDOException $e) {
     $newspapers_by_type = [];
     $total_newspapers = 0;
-    $total_pages = 0;
 }
 
 // Traductions
@@ -85,7 +82,9 @@ $translations = [
         'back_to_dashboard' => 'العودة للوحة التحكم',
         'shaab_newspaper' => 'جريدة الشعب',
         'official_newspaper' => 'الجريدة الرسمية',
-        'total_issues' => 'إجمالي الإصدارات'
+        'total_issues' => 'إجمالي الإصدارات',
+        'registration_date' => 'تاريخ التسجيل',
+        'modification_date' => 'تاريخ التعديل'
     ],
     'fr' => [
         'title' => 'Journaux',
@@ -111,11 +110,28 @@ $translations = [
         'back_to_dashboard' => 'Retour au tableau de bord',
         'shaab_newspaper' => 'Journal du Peuple',
         'official_newspaper' => 'Journal officiel',
-        'total_issues' => 'Total des éditions'
+        'total_issues' => 'Total des éditions',
+        'registration_date' => 'Date d\'enregistrement',
+        'modification_date' => 'Date de modification'
     ]
 ];
 
 $t = $translations[$lang];
+
+// Titre dynamique selon le filtre
+if ($filter_type === 'popular') {
+    $page_title    = $t['shaab_newspaper'];
+    $page_subtitle = $lang == 'ar' ? 'جرد أعداد جريدة الشعب' : 'Inventaire des numéros du Journal du Peuple';
+    $page_icon     = 'fa-newspaper';
+} elseif ($filter_type === 'official') {
+    $page_title    = $t['official_newspaper'];
+    $page_subtitle = $lang == 'ar' ? 'جرد أعداد الجريدة الرسمية' : 'Inventaire des numéros du Journal Officiel';
+    $page_icon     = 'fa-file-alt';
+} else {
+    $page_title    = $t['title'];
+    $page_subtitle = $t['subtitle'];
+    $page_icon     = 'fa-newspaper';
+}
 ?>
 
 <!DOCTYPE html>
@@ -371,10 +387,10 @@ $t = $translations[$lang];
         
         <div class="header">
             <h1>
-                <i class="fas fa-newspaper"></i>
-                <?= $t['title'] ?>
+                <i class="fas <?= $page_icon ?>"></i>
+                <?= $page_title ?>
             </h1>
-            <p><?= $t['subtitle'] ?></p>
+            <p><?= $page_subtitle ?></p>
         </div>
 
         <div class="stats-bar">
@@ -383,12 +399,12 @@ $t = $translations[$lang];
                 <div class="stats-label"><?= $t['total_newspapers'] ?></div>
             </div>
             
-            <div class="stats-info">
+            <!-- <div class="stats-info">
                 <a href="add_newspaper.php?lang=<?=$lang?>" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #667eea; color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">
                     <i class="fas fa-plus"></i>
                     <?= $t['add_newspaper'] ?>
                 </a>
-            </div>
+            </div> -->
         </div>
 
         <?php if ($total_newspapers == 0): ?>
@@ -402,154 +418,66 @@ $t = $translations[$lang];
                 </a>
             </div>
         <?php else: ?>
-            <!-- Section: جريدة الشعب / Journal du Peuple -->
-            <?php 
-            $shaab_newspapers = $newspapers_by_type['popular'] ?? [];
+            <?php
+            // تحديد الأقسام التي ستُعرض حسب الفلتر
+            $sections_to_show = [];
+            if (!$filter_type || $filter_type === 'popular') {
+                $sections_to_show[] = [
+                    'key'        => 'popular',
+                    'label'      => $t['shaab_newspaper'],
+                    'icon'       => 'fa-newspaper',
+                    'empty_msg'  => $lang == 'ar' ? 'لا توجد إصدارات من جريدة الشعب' : 'Aucune édition du Journal du Peuple',
+                ];
+            }
+            if (!$filter_type || $filter_type === 'official') {
+                $sections_to_show[] = [
+                    'key'        => 'official',
+                    'label'      => $t['official_newspaper'],
+                    'icon'       => 'fa-file-alt',
+                    'empty_msg'  => $lang == 'ar' ? 'لا توجد إصدارات من الجريدة الرسمية' : 'Aucune édition du Journal officiel',
+                ];
+            }
             ?>
+            <?php foreach ($sections_to_show as $section): ?>
+            <?php $rows = $newspapers_by_type[$section['key']] ?? []; ?>
             <div class="newspaper-section">
                 <div class="section-header">
                     <h2>
-                        <i class="fas fa-newspaper"></i>
-                        <?= $t['shaab_newspaper'] ?>
+                        <i class="fas <?= $section['icon'] ?>"></i>
+                        <?= $section['label'] ?>
                     </h2>
                     <span class="section-count">
-                        <?= count($shaab_newspapers) ?> <?= $t['total_issues'] ?>
+                        <?= count($rows) ?> <?= $t['total_issues'] ?>
                     </span>
                 </div>
-                
-                <?php if (empty($shaab_newspapers)): ?>
-                    <div class="no-newspapers-section">
-                        <i class="fas fa-info-circle"></i>
-                        <?= $lang == 'ar' ? 'لا توجد إصدارات من جريدة الشعب' : 'Aucune édition du Journal du Peuple' ?>
-                    </div>
-                <?php else: ?>
-                    <div class="newspapers-grid">
-                        <?php foreach ($shaab_newspapers as $newspaper): ?>
-                            <div class="newspaper-card">
-                                <div class="newspaper-title">
-                                    <i class="fas fa-newspaper"></i>
-                                    <?= htmlspecialchars($newspaper['title']) ?>
-                                </div>
-                                
-                                <div class="newspaper-details">
-                                    <!-- Issues Range -->
-                                    <div class="newspaper-detail">
-                                        <i class="fas fa-sort-numeric-up"></i>
-                                        <span><?= $t['issues'] ?>:</span>
-                                        <span class="issues-range">
-                                            <?= htmlspecialchars($newspaper['issue_from']) ?> 
-                                            <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i> 
-                                            <?= htmlspecialchars($newspaper['issue_to']) ?>
-                                        </span>
-                                    </div>
-                                    
-                                    <!-- Date -->
-                                    <?php if (!empty($newspaper['newspaper_date'])): ?>
-                                    <div class="newspaper-detail">
-                                        <i class="fas fa-calendar"></i>
-                                        <span><?= $t['newspaper_date'] ?>:</span>
-                                        <strong><?= date('Y-m-d', strtotime($newspaper['newspaper_date'])) ?></strong>
-                                    </div>
-                                    <?php endif; ?>
-                                    
-                                    <!-- Missing Issues -->
-                                    <?php if (!empty($newspaper['missing_issues'])): ?>
-                                    <div class="newspaper-detail">
-                                        <i class="fas fa-exclamation-triangle"></i>
-                                        <span><?= $t['missing_issues'] ?>:</span>
-                                        <span class="missing-issues-badge"><?= htmlspecialchars($newspaper['missing_issues']) ?></span>
-                                    </div>
-                                    <?php endif; ?>
-                                    
-                                    <!-- Location -->
-                                    <?php if (!empty($newspaper['box_number']) || !empty($newspaper['cabinet_number']) || !empty($newspaper['shelf_number']) || !empty($newspaper['drawer_number'])): ?>
-                                    <div class="newspaper-detail">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span><?= $t['location'] ?>:</span>
-                                        <div class="location-info">
-                                            <?php if (!empty($newspaper['box_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-box"></i>
-                                                    <?= $t['box'] ?> <?= htmlspecialchars($newspaper['box_number']) ?>
-                                                </span>
-                                            <?php endif; ?>
-                                            <?php if (!empty($newspaper['cabinet_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-archive"></i>
-                                                    <?= $t['cabinet'] ?> <?= htmlspecialchars($newspaper['cabinet_number']) ?>
-                                                </span>
-                                            <?php endif; ?>
-                                            <?php if (!empty($newspaper['shelf_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-layer-group"></i>
-                                                    <?= $t['shelf'] ?> <?= htmlspecialchars($newspaper['shelf_number']) ?>
-                                                </span>
-                                            <?php endif; ?>
-                                            <?php if (!empty($newspaper['drawer_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-drawer"></i>
-                                                    <?= $t['drawer'] ?> <?= htmlspecialchars($newspaper['drawer_number']) ?>
-                                                </span>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                    <?php endif; ?>
-                                    
-                                    <!-- Date Added -->
-                                    <div class="newspaper-detail">
-                                        <i class="fas fa-clock"></i>
-                                        <span><?= $t['date_added'] ?>:</span>
-                                        <strong><?= date('Y-m-d', strtotime($newspaper['created_at'])) ?></strong>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
 
-            <!-- Section: الجريدة الرسمية / Journal officiel -->
-            <?php 
-            $official_newspapers = $newspapers_by_type['official'] ?? [];
-            ?>
-            <div class="newspaper-section">
-                <div class="section-header">
-                    <h2>
-                        <i class="fas fa-file-alt"></i>
-                        <?= $t['official_newspaper'] ?>
-                    </h2>
-                    <span class="section-count">
-                        <?= count($official_newspapers) ?> <?= $t['total_issues'] ?>
-                    </span>
-                </div>
-                
-                <?php if (empty($official_newspapers)): ?>
+                <?php if (empty($rows)): ?>
                     <div class="no-newspapers-section">
                         <i class="fas fa-info-circle"></i>
-                        <?= $lang == 'ar' ? 'لا توجد إصدارات من الجريدة الرسمية' : 'Aucune édition du Journal officiel' ?>
+                        <?= $section['empty_msg'] ?>
                     </div>
                 <?php else: ?>
                     <div class="newspapers-grid">
-                        <?php foreach ($official_newspapers as $newspaper): ?>
+                        <?php foreach ($rows as $newspaper): ?>
                             <div class="newspaper-card">
                                 <div class="newspaper-title">
-                                    <i class="fas fa-file-alt"></i>
+                                    <i class="fas <?= $section['icon'] ?>"></i>
                                     <?= htmlspecialchars($newspaper['title']) ?>
                                 </div>
-                                
+
                                 <div class="newspaper-details">
-                                    <!-- Issues Range -->
+                                    <!-- الأعداد -->
                                     <div class="newspaper-detail">
                                         <i class="fas fa-sort-numeric-up"></i>
                                         <span><?= $t['issues'] ?>:</span>
                                         <span class="issues-range">
-                                            <?= htmlspecialchars($newspaper['issue_from']) ?> 
-                                            <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i> 
+                                            <?= htmlspecialchars($newspaper['issue_from']) ?>
+                                            <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
                                             <?= htmlspecialchars($newspaper['issue_to']) ?>
                                         </span>
                                     </div>
-                                    
-                                    <!-- Date -->
+
+                                    <!-- التاريخ -->
                                     <?php if (!empty($newspaper['newspaper_date'])): ?>
                                     <div class="newspaper-detail">
                                         <i class="fas fa-calendar"></i>
@@ -557,8 +485,8 @@ $t = $translations[$lang];
                                         <strong><?= date('Y-m-d', strtotime($newspaper['newspaper_date'])) ?></strong>
                                     </div>
                                     <?php endif; ?>
-                                    
-                                    <!-- Missing Issues -->
+
+                                    <!-- الأعداد الناقصة -->
                                     <?php if (!empty($newspaper['missing_issues'])): ?>
                                     <div class="newspaper-detail">
                                         <i class="fas fa-exclamation-triangle"></i>
@@ -566,42 +494,48 @@ $t = $translations[$lang];
                                         <span class="missing-issues-badge"><?= htmlspecialchars($newspaper['missing_issues']) ?></span>
                                     </div>
                                     <?php endif; ?>
-                                    
-                                    <!-- Location -->
+
+                                    <!-- الموقع -->
                                     <?php if (!empty($newspaper['box_number']) || !empty($newspaper['cabinet_number']) || !empty($newspaper['shelf_number']) || !empty($newspaper['drawer_number'])): ?>
                                     <div class="newspaper-detail">
                                         <i class="fas fa-map-marker-alt"></i>
                                         <span><?= $t['location'] ?>:</span>
                                         <div class="location-info">
                                             <?php if (!empty($newspaper['box_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-box"></i>
-                                                    <?= $t['box'] ?> <?= htmlspecialchars($newspaper['box_number']) ?>
-                                                </span>
+                                                <span class="location-badge"><i class="fas fa-box"></i><?= $t['box'] ?> <?= htmlspecialchars($newspaper['box_number']) ?></span>
                                             <?php endif; ?>
                                             <?php if (!empty($newspaper['cabinet_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-archive"></i>
-                                                    <?= $t['cabinet'] ?> <?= htmlspecialchars($newspaper['cabinet_number']) ?>
-                                                </span>
+                                                <span class="location-badge"><i class="fas fa-archive"></i><?= $t['cabinet'] ?> <?= htmlspecialchars($newspaper['cabinet_number']) ?></span>
                                             <?php endif; ?>
                                             <?php if (!empty($newspaper['shelf_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-layer-group"></i>
-                                                    <?= $t['shelf'] ?> <?= htmlspecialchars($newspaper['shelf_number']) ?>
-                                                </span>
+                                                <span class="location-badge"><i class="fas fa-layer-group"></i><?= $t['shelf'] ?> <?= htmlspecialchars($newspaper['shelf_number']) ?></span>
                                             <?php endif; ?>
                                             <?php if (!empty($newspaper['drawer_number'])): ?>
-                                                <span class="location-badge">
-                                                    <i class="fas fa-drawer"></i>
-                                                    <?= $t['drawer'] ?> <?= htmlspecialchars($newspaper['drawer_number']) ?>
-                                                </span>
+                                                <span class="location-badge"><i class="fas fa-box-open"></i><?= $t['drawer'] ?> <?= htmlspecialchars($newspaper['drawer_number']) ?></span>
                                             <?php endif; ?>
                                         </div>
                                     </div>
                                     <?php endif; ?>
-                                    
-                                    <!-- Date Added -->
+
+                                    <!-- تاريخ التسجيل -->
+                                    <?php if (!empty($newspaper['registration_date'])): ?>
+                                    <div class="newspaper-detail">
+                                        <i class="fas fa-calendar-plus"></i>
+                                        <span><?= $t['registration_date'] ?>:</span>
+                                        <strong><?= date('Y-m-d', strtotime($newspaper['registration_date'])) ?></strong>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <!-- تاريخ التعديل -->
+                                    <?php if (!empty($newspaper['modification_date'])): ?>
+                                    <div class="newspaper-detail">
+                                        <i class="fas fa-calendar-check"></i>
+                                        <span><?= $t['modification_date'] ?>:</span>
+                                        <strong><?= date('Y-m-d', strtotime($newspaper['modification_date'])) ?></strong>
+                                    </div>
+                                    <?php endif; ?>
+
+                                    <!-- تاريخ الإضافة -->
                                     <div class="newspaper-detail">
                                         <i class="fas fa-clock"></i>
                                         <span><?= $t['date_added'] ?>:</span>
@@ -613,6 +547,7 @@ $t = $translations[$lang];
                     </div>
                 <?php endif; ?>
             </div>
+            <?php endforeach; ?>
         <?php endif; ?>
     </div>
 <script src="assets/js/professional-interactions.js"></script>

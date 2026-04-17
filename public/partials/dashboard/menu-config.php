@@ -58,7 +58,7 @@ return [
 
     'menu_texts' => [
         'ar' => [
-            'welcome' => 'مرحباً بك في النظام',
+            'welcome' => 'مرحباً بك فيSEBIL-ENAJM',
             'system_ready' => 'النظام جاهز',
             'optimized' => 'محسن للأداء',
             'secure' => 'آمن',
@@ -86,7 +86,8 @@ return [
             'employees' => 'الموظفين'
         ],
         'fr' => [
-            'welcome' => 'Bienvenue dans le système',
+            'welcome' => 'Bienvenue 
+SEBIL–ENAJM',
             'system_ready' => 'Système Prêt',
             'optimized' => 'Optimisé',
             'secure' => 'Sécurisé',

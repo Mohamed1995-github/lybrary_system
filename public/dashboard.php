@@ -51,7 +51,7 @@ $resourceTypes = $menuConfig['resource_types'];
                 <i class="fas fa-book-open"></i>
             </div>
             <span class="logo-text">
-                <?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة' : 'SEBIL–ENAJM : Système Électronique de la Bibliothèque' ?>
+                <?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة\SEBIL-ENAJM' : 'SEBIL–ENAJM : Système Électronique de la Bibliothèque' ?>
             </span>
         </div>
         
@@ -79,7 +79,7 @@ $resourceTypes = $menuConfig['resource_types'];
         <div class="welcome-card animate-slide-up">
             <h1 class="welcome-title"><?= $texts['welcome'] ?></h1>
             <p class="welcome-subtitle">
-                <?= $lang == 'ar' ? ' ' : 'Système de gestion de bibliothèque optimisé' ?>
+                <?= $lang == 'ar' ? ' ' : '' ?>
             </p>
         </div>
 

@@ -299,14 +299,14 @@ $specializations = $menuConfig['specializations'];
 
     <div class="modal-content">
         <div class="modal-grid">
-            <a href="modules/items/list_newspapers.php?type=chaab&lang=<?= $lang ?>" class="modal-item">
+            <a href="modules/items/list_newspapers.php?newspaper_type=popular&lang=<?= $lang ?>" class="modal-item">
                 <div class="modal-item-icon">📰</div>
                 <h3 class="modal-item-title">
                     <?= $lang == 'ar' ? 'جريدة الشعب' : 'Journal El Chaab' ?>
                 </h3>
             </a>
 
-            <a href="modules/items/list_newspapers.php?type=official&lang=<?= $lang ?>" class="modal-item">
+            <a href="modules/items/list_newspapers.php?newspaper_type=official&lang=<?= $lang ?>" class="modal-item">
                 <div class="modal-item-icon">🗞️</div>
                 <h3 class="modal-item-title">
                     <?= $lang == 'ar' ? 'الجريدة الرسمية' : 'Journal Officiel' ?>
@@ -407,7 +407,7 @@ $specializations = $menuConfig['specializations'];
             </h3>
             
             <div class="modal-grid">
-                <a href="modules/items/add_book_fixed.php?lang=<?= $lang ?>" class="modal-item">
+                <a href="modules/items/add_book_simple.php?lang=<?= $lang ?>" class="modal-item">
                     <div class="modal-item-icon">📖</div>
                     <div class="modal-item-title">
                         <?= $lang == 'ar' ? 'كتاب متخصص' : 'Livre Spécialisé' ?>
@@ -473,9 +473,9 @@ $specializations = $menuConfig['specializations'];
     </div>
 
     <div class="modal-footer">
-        <button onclick="hideAddResourcesMenu()" class="btn btn-primary">
-            <i class="fas fa-times"></i>
-            <?= $texts['close'] ?>
+        <button onclick="hideAddResourcesMenu(); showITMenu();" class="btn btn-secondary">
+            <i class="fas fa-arrow-<?= $lang == 'ar' ? 'right' : 'left' ?>"></i>
+            <?= $lang == 'ar' ? 'العودة لقسم المعلوماتية' : 'Retour à l\'informatique' ?>
         </button>
     </div>
 </div>

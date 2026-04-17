@@ -476,6 +476,13 @@
         // Setup menu link effects
         setupMenuLinkEffects();
 
+        // Auto-open modal from URL parameter ?modal=xxx
+        const urlModal = new URLSearchParams(window.location.search).get('modal');
+        if (urlModal) {
+            const fnName = 'show' + urlModal.charAt(0).toUpperCase() + urlModal.slice(1);
+            if (typeof window[fnName] === 'function') window[fnName]();
+        }
+
         // Log initialization
         console.log('✅ Dashboard JavaScript initialized successfully');
     }

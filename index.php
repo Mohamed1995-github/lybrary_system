@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['search'])) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة' : 'Système de Gestion de Bibliothèque' ?></title>
+    <title><?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة\SEBIL-ENAJM' : 'Système de Gestion de Bibliothèque' ?></title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>

@@ -657,11 +657,12 @@ function book_value(array $book, array $keys, string $default = '-'): string {
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th><?= $lang == 'ar' ? 'العنوان والمؤلف' : 'Titre et Auteur' ?></th>
+                            <th><?= $lang == 'ar' ? 'العنوان' : 'Titre' ?></th>
+                            <th><?= $lang == 'ar' ? 'المؤلف' : 'Auteur' ?></th>
                             <th><?= $lang == 'ar' ? 'دار النشر' : 'Éditeur' ?></th>
-                            <th><?= $lang == 'ar' ? 'سنة النشر' : 'Année' ?></th>
-                            <th><?= $lang == 'ar' ? 'ISBN' : 'ISBN' ?></th>
-                            <th><?= $lang == 'ar' ? 'النسخ' : 'Copies' ?></th>
+                            <th><?= $lang == 'ar' ? 'تاريخ النشر' : 'Année' ?></th>
+                            <th><?= $lang == 'ar' ? 'مكان النشر' : 'Lieu de publication' ?></th>
+                            <th><?= $lang == 'ar' ? 'عدد النسخ  ' : 'Copies' ?></th>
                             <th><?= $lang == 'ar' ? 'اللغة' : 'Langue' ?></th>
                             <th class="col-actions"><?= $lang == 'ar' ? 'التفاصيل' : 'Détails' ?></th>
                         </tr>
@@ -681,6 +682,8 @@ function book_value(array $book, array $keys, string $default = '-'): string {
                                 <td style="font-weight: 600; color: var(--primary);"><?= $index + 1 ?></td>
                                 <td>
                                     <div class="book-title"><?= htmlspecialchars($display_title) ?></div>
+                                </td>
+                                <td>
                                     <div class="book-author">
                                         <i class="fas fa-user" style="font-size: 0.75rem;"></i>
                                         <?= htmlspecialchars(book_value($book, ['author'])) ?>
@@ -688,7 +691,7 @@ function book_value(array $book, array $keys, string $default = '-'): string {
                                 </td>
                                 <td><?= htmlspecialchars(book_value($book, ['publisher'])) ?></td>
                                 <td><?= htmlspecialchars($display_year) ?></td>
-                                <td style="font-family: monospace; font-size: 0.875rem;"><?= htmlspecialchars(book_value($book, ['isbn'])) ?></td>
+                                <td><?= htmlspecialchars(book_value($book, ['publication_place'])) ?></td>
                                 <td>
                                     <span style="font-weight: 600; color: var(--primary);">
                                         <?= htmlspecialchars($display_available) ?>
@@ -709,27 +712,23 @@ function book_value(array $book, array $keys, string $default = '-'): string {
                                 </td>
                             </tr>
                             <tr id="<?= htmlspecialchars($detail_row_id) ?>" class="details-row">
-                                <td colspan="8">
+                                <td colspan="9">
                                     <div class="details-card">
                                         <div class="details-title"><?= $lang == 'ar' ? 'معلومات الكتاب التفصيلية' : 'Informations détaillées du livre' ?></div>
                                         <div class="details-grid">
-                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'التصنيف' : 'Classification' ?></strong><span><?= htmlspecialchars(book_value($book, ['classification', 'classification_number'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'المجال' : 'Domaine' ?></strong><span><?= htmlspecialchars(book_value($book, ['field'])) ?></span></div>
-                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'الصيغة' : 'Format' ?></strong><span><?= htmlspecialchars(book_value($book, ['format'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'عدد الصفحات' : 'Pages' ?></strong><span><?= htmlspecialchars(book_value($book, ['pages'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'الطبعة' : 'Édition' ?></strong><span><?= htmlspecialchars(book_value($book, ['edition'])) ?></span></div>
-                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'السلسلة' : 'Série' ?></strong><span><?= htmlspecialchars(book_value($book, ['series'])) ?></span></div>
-                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'نوع الكتاب' : 'Type de livre' ?></strong><span><?= htmlspecialchars(book_value($book, ['book_type'])) ?></span></div>
+                                            <div class="detail-item"><strong><?= $lang == 'ar' ? '  حجم الكتاب' : 'Type de livre' ?></strong><span><?= htmlspecialchars(book_value($book, ['book_type'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'العنوان الفرعي' : 'Sous-titre' ?></strong><span><?= htmlspecialchars(book_value($book, ['subtitle'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'العنوان المختصر' : 'Titre abrégé' ?></strong><span><?= htmlspecialchars(book_value($book, ['short_title'])) ?></span></div>
-                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'مكان النشر' : 'Lieu de publication' ?></strong><span><?= htmlspecialchars(book_value($book, ['publication_place'])) ?></span></div>
+                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'ISBN' : 'ISBN' ?></strong><span style="font-family: monospace;"><?= htmlspecialchars(book_value($book, ['isbn'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'رقم التصنيف' : 'Numéro de classification' ?></strong><span><?= htmlspecialchars(book_value($book, ['classification_number'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'رقم الرف' : 'Numéro d\'étagère' ?></strong><span><?= htmlspecialchars(book_value($book, ['shelf_number'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'رقم الدرج' : 'Numéro du tiroir' ?></strong><span><?= htmlspecialchars(book_value($book, ['drawer_number'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'عدد الأجزاء' : 'Nombre de parties' ?></strong><span><?= htmlspecialchars(book_value($book, ['parts'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'تاريخ التسجيل' : 'Date d\'enregistrement' ?></strong><span><?= htmlspecialchars(book_value($book, ['registration_date'])) ?></span></div>
                                             <div class="detail-item"><strong><?= $lang == 'ar' ? 'تاريخ التعديل' : 'Date de modification' ?></strong><span><?= htmlspecialchars(book_value($book, ['modification_date'])) ?></span></div>
-                                            <div class="detail-item"><strong><?= $lang == 'ar' ? 'تاريخ الإضافة' : 'Date d\'ajout' ?></strong><span><?= htmlspecialchars(book_value($book, ['created_at'])) ?></span></div>
                                         </div>
                                         <div class="detail-desc">
                                             <strong><?= $lang == 'ar' ? 'Description' : 'Description' ?></strong><br>

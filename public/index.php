@@ -109,7 +109,7 @@ if (!$debug) {
     <div class="container">
         <div class="logo">📚</div>
         <h1 class="title">
-            <?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة' : 'SEBIL–ENAJM : Système Électronique de la Bibliothèque' ?>
+            <?= $lang == 'ar' ? ' النظام الإلكتروني للمكتبة\SEBIL-ENAJM' : 'SEBIL–ENAJM : Système Électronique de la Bibliothèque' ?>
         </h1>
         <p class="subtitle">
             <?= $lang == 'ar' ? 'اختر طريقة الدخول المناسبة' : 'Choisissez votre méthode de connexion' ?>

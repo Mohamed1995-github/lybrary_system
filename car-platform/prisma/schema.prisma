@@ -1,0 +1,121 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(CLIENT)
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  agency   Agency? @relation
+  messages Message[]
+
+  @@map("users")
+}
+
+model Agency {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  address     String
+  phone       String
+  email       String
+  website     String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ownerId String @unique
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  cars    Car[]
+  messages Message[]
+
+  @@map("agencies")
+}
+
+model Car {
+  id           String      @id @default(cuid())
+  brand        String
+  model        String
+  year         Int
+  color        String
+  mileage      Int
+  fuel         FuelType
+  transmission TransmissionType
+  price        Float
+  type         CarType     // SALE or RENT
+  description  String?
+  images       String      // JSON string of image URLs
+  available    Boolean     @default(true)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  // Relations
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("cars")
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  content   String
+  status    MessageStatus @default(UNREAD)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agencyId String
+  agency   Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  carId    String?
+  car      Car?   @relation(fields: [carId], references: [id], onDelete: SetNull)
+
+  @@map("messages")
+}
+
+enum UserRole {
+  CLIENT
+  AGENCY
+}
+
+enum FuelType {
+  ESSENCE
+  DIESEL
+  HYBRIDE
+  ELECTRIQUE
+  GPL
+}
+
+enum TransmissionType {
+  MANUELLE
+  AUTOMATIQUE
+}
+
+enum CarType {
+  VENTE
+  LOCATION
+}
+
+enum MessageStatus {
+  UNREAD
+  READ
+  REPLIED
+}
